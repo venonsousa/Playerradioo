@@ -15,7 +15,7 @@ body {
   font-family: Arial;
 }
 
-/* PLAYER FLEX HORIZONTAL */
+/* PLAYER FIXO */
 .player {
   display: flex;
   align-items: flex-start;
@@ -25,6 +25,13 @@ body {
   background: #1a1a1a;
   color: white;
   position: relative;
+  width: 551px;
+  height: 276px;
+  min-width: 551px;
+  max-width: 551px;
+  min-height: 276px;
+  max-height: 276px;
+  box-sizing: border-box;
 }
 
 /* NEON INTELIGENTE */
@@ -52,6 +59,7 @@ body {
   padding: 10px;
   box-sizing: border-box;
   z-index: 1;
+  flex-shrink: 0;
 }
 .info-background {
   position: absolute;
@@ -83,15 +91,17 @@ body {
   flex-direction: column;
   align-items: center;
   gap: 8px;
+  flex-shrink: 0;
 }
 .cover {
-  width: 180px;
-  height: 110px;
+  width: 206px;
+  height: 164px;
   border-radius: 12px;
   overflow: hidden;
   border: 2px solid transparent;
   background: linear-gradient(#1a1a1a, #1a1a1a) padding-box,
               linear-gradient(45deg,#00ffcc,#ff00ff) border-box;
+  flex-shrink: 0;
 }
 .cover img {
   width: 100%;
@@ -145,7 +155,7 @@ body {
   <!-- LADO DIREITO -->
   <div class="right">
     <div class="cover">
-      <img id="cover" src="https://via.placeholder.com/180x110?text=Rádio">
+      <img id="cover" src="https://via.placeholder.com/206x164?text=Rádio">
     </div>
     <div class="controls">
       <button id="playBtn">▶️</button>
@@ -209,7 +219,7 @@ function atualizarTextoMusica(texto) {
 /* Capa Inteligente */
 function atualizarCapa(url, artista) {
   const img = document.getElementById("cover");
-  const fallback = `https://ui-avatars.com/api/?name=${encodeURIComponent(artista)}&background=0f0f0f&color=00ffcc&size=180`;
+  const fallback = `https://ui-avatars.com/api/?name=${encodeURIComponent(artista)}&background=0f0f0f&color=00ffcc&size=206`;
   if (!url || url.length < 10) { img.src = fallback; return; }
   const teste = new Image();
   teste.onload = () => { img.style.opacity = 0; setTimeout(() => { img.src = url; img.style.opacity = 1; }, 200); };
@@ -237,7 +247,6 @@ async function atualizar() {
       musica = partes.slice(1).join("-").trim();
     }
 
-    // Limita tamanho do artista
     if (artista.length > 20) artista = artista.slice(0, 20) + "...";
 
     document.getElementById("artist").textContent = "🎤 " + artista;
