@@ -17,21 +17,21 @@ body {
 }
 
 .player {
-  width: 320px;
-  padding: 20px;
-  border-radius: 20px;
+  width: 340px;
+  padding: 15px;
+  border-radius: 16px;
   background: #1a1a1a;
   color: white;
   text-align: center;
   position: relative;
 }
 
-/* NEON CONTROLADO */
+/* NEON INTELIGENTE */
 .player::before {
   content: "";
   position: absolute;
   inset: -2px;
-  border-radius: 20px;
+  border-radius: 16px;
   background: linear-gradient(45deg,#00ffcc,#ff00ff,#00ffcc);
   background-size: 300%;
   z-index: -1;
@@ -46,13 +46,16 @@ body {
   100% { background-position: 300% }
 }
 
+/* CAPA NOVA */
 .cover {
-  width: 180px;
-  height: 180px;
+  width: 320px;
+  height: 190px;
   margin: auto;
-  border-radius: 50%;
+  border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 0 20px #00ffcc;
+  border: 2px solid transparent;
+  background: linear-gradient(#1a1a1a, #1a1a1a) padding-box,
+              linear-gradient(45deg,#00ffcc,#ff00ff) border-box;
 }
 
 .cover img {
@@ -62,50 +65,50 @@ body {
   transition: opacity 0.3s ease;
 }
 
+/* GRID */
 .grid {
   display: grid;
-  gap: 10px;
-  margin-top: 15px;
+  gap: 6px;
+  margin-top: 12px;
 }
 
+/* TEXTO */
 .radio-name {
-  font-size: 14px;
+  font-size: 12px;
   color: #00ffcc;
-  font-weight: bold;
+  letter-spacing: 1px;
 }
 
 .music-wrapper {
   width: 100%;
   overflow: hidden;
   white-space: nowrap;
-  height: 20px;
+  height: 22px;
 }
 
 .music-scroll {
   display: inline-block;
-}
-
-@keyframes scrollMusic {
-  0% { transform: translateX(100%); }
-  100% { transform: translateX(-100%); }
+  font-size: 15px;
+  font-weight: bold;
 }
 
 .artist {
   font-size: 13px;
-  color: #ccc;
+  color: #aaa;
 }
 
-.status { font-size: 12px; margin-top: 5px; }
+.status { font-size: 12px; }
 .online { color: #00ff00; }
 .offline { color: red; }
 
+/* CONTROLES */
 .controls button {
   margin: 5px;
   padding: 10px;
   font-size: 18px;
   background: #00ffcc;
   border: none;
-  border-radius: 5px;
+  border-radius: 6px;
   cursor: pointer;
 }
 
@@ -121,7 +124,7 @@ input[type="range"] {
 <div class="player">
 
   <div class="cover">
-    <img id="cover" src="https://via.placeholder.com/300x300?text=Rádio">
+    <img id="cover" src="https://via.placeholder.com/320x190?text=Rádio">
   </div>
 
   <div class="grid">
@@ -171,7 +174,7 @@ playBtn.onclick = async () => {
   }
 };
 
-/* CONTROLE VISUAL */
+/* NEON REAGE */
 audio.addEventListener("play", () => {
   document.querySelector(".player").classList.add("playing");
 });
@@ -205,16 +208,19 @@ function atualizarTextoMusica(texto) {
   }
 }
 
-/* CAPA */
-function atualizarCapa(url) {
+/* CAPA INTELIGENTE */
+function atualizarCapa(url, artista) {
   const img = document.getElementById("cover");
 
-  if (!url) {
-    img.src = "https://via.placeholder.com/300x300?text=Sem+Capa";
+  const fallback = `https://ui-avatars.com/api/?name=${encodeURIComponent(artista)}&background=0f0f0f&color=00ffcc&size=320`;
+
+  if (!url || url.length < 10) {
+    img.src = fallback;
     return;
   }
 
   const teste = new Image();
+
   teste.onload = () => {
     img.style.opacity = 0;
     setTimeout(() => {
@@ -222,9 +228,11 @@ function atualizarCapa(url) {
       img.style.opacity = 1;
     }, 200);
   };
+
   teste.onerror = () => {
-    img.src = "https://via.placeholder.com/300x300?text=Erro";
+    img.src = fallback;
   };
+
   teste.src = url;
 }
 
@@ -252,7 +260,8 @@ async function atualizar() {
 
     atualizarTextoMusica(musica);
     document.getElementById("artist").textContent = "🎤 " + artista;
-    atualizarCapa(capa);
+
+    atualizarCapa(capa, artista);
 
     if (status === "1") {
       statusEl.textContent = "🟢 Rádio Online";
