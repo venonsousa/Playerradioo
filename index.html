@@ -18,7 +18,7 @@ body {
 /* PLAYER FIXO */
 .player {
   display: flex;
-  justify-content: space-between; /* separa info e capa */
+  justify-content: space-between;
   align-items: flex-start;
   padding: 15px;
   border-radius: 16px;
@@ -51,8 +51,8 @@ body {
 /* LADO ESQUERDO - QUADRO DE INFORMAÇÕES */
 .info-container {
   position: relative;
-  width: 177px;
-  height: 123px;
+  width: 291px;
+  height: 121px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -63,8 +63,8 @@ body {
 }
 .info-background {
   position: absolute;
-  width: 177px;
-  height: 123px;
+  width: 291px;
+  height: 121px;
   top: 0;
   left: 0;
   border-radius: 12px;
@@ -79,10 +79,10 @@ body {
   gap: 4px;
   z-index: 2;
 }
-.radio-name { font-size: 14px; color: #00ffcc; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.station { font-size: 13px; color: #aaa; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.artist { font-size: 13px; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
-.status { font-size: 12px; margin-top: 4px; }
+.radio-name { font-size: 16px; color: #00ffcc; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.station { font-size: 14px; color: #aaa; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.artist { font-size: 14px; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+#current-music { font-size: 13px; color: #00ffcc; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 4px; }
 #volume { width: 120px; margin-top: 4px; }
 
 /* LADO DIREITO - CAPA ENCAIXADA NA BORDA */
@@ -145,8 +145,8 @@ body {
     <div class="info">
       <div class="radio-name">RÁDIO INSANO</div>
       <div class="station">Sabor Energetico</div>
-      <div class="artist" id="artist">🎤 Panda e Mayke</div>
-      <div id="status" class="status offline">🔴 Rádio Offline</div>
+      <div class="artist" id="artist">🎤 LadyGagaVEVO</div>
+      <div id="current-music">Carregando música...</div>
       <input type="range" id="volume" min="0" max="1" step="0.01" value="1">
     </div>
   </div>
@@ -213,6 +213,17 @@ function atualizarTextoMusica(texto) {
   }
 }
 
+/* Atualiza a música no quadro */
+function atualizarQuadroMusica(texto) {
+  const el = document.getElementById("current-music");
+  el.style.animation = "none";
+  el.innerHTML = texto;
+  if (texto.length > 25) {
+    el.innerHTML = texto + " • " + texto;
+    el.style.animation = "scrollMusic 12s linear infinite";
+  }
+}
+
 /* Atualiza capa */
 function atualizarCapa(url, artista) {
   const img = document.getElementById("cover");
@@ -247,19 +258,12 @@ async function atualizar() {
     if (artista.length > 20) artista = artista.slice(0,20) + "...";
 
     document.getElementById("artist").textContent = "🎤 " + artista;
+    atualizarQuadroMusica(musica);
     atualizarTextoMusica(musica);
     atualizarCapa(capa, artista);
 
-    if (status === "1") {
-      statusEl.textContent = "🟢 Rádio Online";
-      statusEl.className = "status online";
-    } else {
-      statusEl.textContent = "🔴 Rádio Offline";
-      statusEl.className = "status offline";
-    }
   } catch {
-    statusEl.textContent = "⚠️ Erro na conexão";
-    statusEl.className = "status offline";
+    atualizarQuadroMusica("Erro na conexão");
   }
 }
 
