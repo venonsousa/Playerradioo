@@ -32,11 +32,12 @@ body {
   max-height: 276px;
   box-sizing: border-box;
 
-  /* FUNDO ADICIONADO */
-  background-image: url('https://xatimg.com/image/LycdHImWVdzP.png');
+  /* FUNDO */
+  background-image: url('https://xatimg.com/image/Y9KIwtZfXsBw.png');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+  overflow: hidden;
 }
 
 /* NEON INTELIGENTE */
@@ -63,7 +64,7 @@ body {
   justify-content: center;
   padding: 10px;
   box-sizing: border-box;
-  z-index: 1;
+  z-index: 2; /* acima das letras */
   flex-shrink: 0;
 }
 .info-background {
@@ -77,17 +78,29 @@ body {
   opacity: 0.15;
   z-index: 0;
 }
+
+/* CONTEÚDO COM 53px DE MARGEM INTERNA */
 .info {
   display: flex;
   flex-direction: column;
   justify-content: center;
   gap: 4px;
   z-index: 2;
+  padding-left: 53px; /* afastamento da borda esquerda */
+  box-sizing: border-box;
 }
-.radio-name { font-size: 16px; color: #00ffcc; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.station { font-size: 14px; color: #aaa; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.artist { font-size: 14px; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
-#current-music { font-size: 13px; color: #00ffcc; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 4px; }
+
+.radio-name, .station, .artist, #current-music {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: calc(100% - 10px); /* garante que não ultrapasse o quadro */
+}
+
+.radio-name { font-size: 16px; color: #00ffcc; font-weight: bold; }
+.station { font-size: 14px; color: #aaa; }
+.artist { font-size: 14px; color: #fff; }
+#current-music { font-size: 13px; color: #00ffcc; margin-top: 4px; }
 #volume { width: 120px; margin-top: 4px; }
 
 /* LADO DIREITO - CAPA E CONTROLES */
@@ -123,14 +136,28 @@ body {
   border-radius: 6px;
   cursor: pointer;
 }
-@keyframes scrollMusic {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+
+/* LETRAS CAINDO */
+.letter {
+  position: absolute;
+  font-size: 14px;
+  color: #00ffcc;
+  user-select: none;
+  pointer-events: none;
+  font-weight: bold;
+  opacity: 0.8;
+  animation-name: fall;
+  animation-timing-function: linear;
 }
+@keyframes fall {
+  0% { transform: translateY(-20px); opacity: 1; }
+  100% { transform: translateY(300px); opacity: 0; }
+}
+
 </style>
 </head>
 <body>
-<div class="player">
+<div class="player" id="player">
 
   <!-- LADO ESQUERDO - QUADRO DE INFORMAÇÕES -->
   <div class="info-container">
@@ -165,9 +192,7 @@ const audio = document.getElementById("audio");
 const playBtn = document.getElementById("playBtn");
 const muteBtn = document.getElementById("muteBtn");
 const volume = document.getElementById("volume");
-
-/* Ativar áudio em mobile */
-document.body.addEventListener("click", () => { audio.load(); }, { once: true });
+const player = document.getElementById("player");
 
 /* PLAY */
 playBtn.onclick = async () => {
@@ -181,15 +206,10 @@ playBtn.onclick = async () => {
     }
   } catch {}
 };
+audio.addEventListener("play", () => { player.classList.add("playing"); });
+audio.addEventListener("pause", () => { player.classList.remove("playing"); });
 
-/* NEON */
-audio.addEventListener("play", () => { document.querySelector(".player").classList.add("playing"); });
-audio.addEventListener("pause", () => { document.querySelector(".player").classList.remove("playing"); });
-
-/* VOLUME */
 volume.oninput = () => { audio.volume = volume.value; };
-
-/* MUTE */
 muteBtn.onclick = () => { audio.muted = !audio.muted; muteBtn.textContent = audio.muted ? "🔇" : "🔊"; };
 
 /* Atualiza música no quadro */
@@ -197,10 +217,6 @@ function atualizarQuadroMusica(texto) {
   const el = document.getElementById("current-music");
   el.style.animation = "none";
   el.innerHTML = texto;
-  if (texto.length > 25) {
-    el.innerHTML = texto + " • " + texto;
-    el.style.animation = "scrollMusic 12s linear infinite";
-  }
 }
 
 /* Atualiza capa */
@@ -224,27 +240,41 @@ async function atualizar() {
 
     let musica = xml.querySelector("musica_atual")?.textContent || "Ao vivo";
     let capa = xml.querySelector("capa_musica")?.textContent || "";
-
     let artista = "Desconhecido";
     if (musica.includes("-")) {
       let partes = musica.split("-");
       artista = partes[0].trim();
       musica = partes.slice(1).join("-").trim();
     }
-
     if (artista.length > 20) artista = artista.slice(0,20) + "...";
 
     document.getElementById("artist").textContent = "🎤 " + artista;
     atualizarQuadroMusica(musica);
     atualizarCapa(capa, artista);
 
+    criarLetras(musica);
+
   } catch {
     atualizarQuadroMusica("Erro na conexão");
   }
 }
-
 setInterval(atualizar, 10000);
 atualizar();
+
+/* LETRAS CAINDO */
+function criarLetras(texto) {
+  document.querySelectorAll(".letter").forEach(l => l.remove());
+  const chars = texto.split("").filter(c => c !== " ");
+  for (let i = 0; i < chars.length; i++) {
+    const span = document.createElement("span");
+    span.className = "letter";
+    span.textContent = chars[i];
+    span.style.left = Math.random() * (player.offsetWidth - 20) + "px";
+    span.style.animationDuration = 3 + Math.random() * 3 + "s";
+    player.appendChild(span);
+    span.addEventListener("animationend", () => span.remove());
+  }
+}
 </script>
 </body>
 </html>
