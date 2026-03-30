@@ -85,7 +85,7 @@ body {
 .status { font-size: 12px; margin-top: 4px; }
 #volume { width: 120px; margin-top: 4px; }
 
-/* LADO DIREITO - CAPA E CONTROLES */
+/* LADO DIREITO - CAPA, CONTROLES E MÚSICA */
 .right {
   display: flex;
   flex-direction: column;
@@ -118,8 +118,6 @@ body {
   border-radius: 6px;
   cursor: pointer;
 }
-
-/* MÚSICA ABAIXO DOS CONTROLES */
 .music-wrapper {
   width: 206px; /* igual largura da capa */
   overflow: hidden;
@@ -153,7 +151,7 @@ body {
     </div>
   </div>
 
-  <!-- LADO DIREITO -->
+  <!-- LADO DIREITO - CAPA, CONTROLES E MÚSICA -->
   <div class="right">
     <div class="cover">
       <img id="cover" src="https://via.placeholder.com/206x164?text=Rádio">
@@ -191,7 +189,7 @@ playBtn.onclick = async () => {
       audio.pause();
       playBtn.textContent = "▶️";
     }
-  } catch { /* ignora erros */ }
+  } catch {}
 };
 
 /* NEON */
