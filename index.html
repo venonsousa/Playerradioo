@@ -113,31 +113,6 @@ input[type="range"] {
   width: 100%;
   accent-color: #00ffcc;
 }
-
-.equalizer {
-  display: flex;
-  justify-content: center;
-  gap: 3px;
-  margin: 10px 0;
-}
-
-.bar {
-  width: 4px;
-  height: 10px;
-  background: #00ffcc;
-  animation: eq 1s infinite ease-in-out;
-  animation-play-state: paused;
-}
-
-.bar:nth-child(2){animation-delay:.2s}
-.bar:nth-child(3){animation-delay:.4s}
-.bar:nth-child(4){animation-delay:.6s}
-.bar:nth-child(5){animation-delay:.8s}
-
-@keyframes eq {
-  0%,100% { height: 10px; }
-  50% { height: 30px; }
-}
 </style>
 </head>
 
@@ -160,14 +135,6 @@ input[type="range"] {
     <div id="artist" class="artist"></div>
     <div id="status" class="status">Conectando...</div>
 
-    <div class="equalizer">
-      <div class="bar"></div>
-      <div class="bar"></div>
-      <div class="bar"></div>
-      <div class="bar"></div>
-      <div class="bar"></div>
-    </div>
-
     <div class="controls">
       <button id="playBtn">▶️</button>
       <button id="muteBtn">🔊</button>
@@ -189,6 +156,7 @@ const playBtn = document.getElementById("playBtn");
 const muteBtn = document.getElementById("muteBtn");
 const volume = document.getElementById("volume");
 
+/* PLAY */
 playBtn.onclick = async () => {
   try {
     if (audio.paused) {
@@ -203,31 +171,27 @@ playBtn.onclick = async () => {
   }
 };
 
+/* CONTROLE VISUAL */
 audio.addEventListener("play", () => {
-  document.querySelectorAll(".bar").forEach(bar => {
-    bar.style.animationPlayState = "running";
-  });
-
   document.querySelector(".player").classList.add("playing");
 });
 
 audio.addEventListener("pause", () => {
-  document.querySelectorAll(".bar").forEach(bar => {
-    bar.style.animationPlayState = "paused";
-  });
-
   document.querySelector(".player").classList.remove("playing");
 });
 
+/* VOLUME */
 volume.oninput = () => {
   audio.volume = volume.value;
 };
 
+/* MUTE */
 muteBtn.onclick = () => {
   audio.muted = !audio.muted;
   muteBtn.textContent = audio.muted ? "🔇" : "🔊";
 };
 
+/* TEXTO */
 function atualizarTextoMusica(texto) {
   const el = document.getElementById("music");
 
@@ -241,6 +205,7 @@ function atualizarTextoMusica(texto) {
   }
 }
 
+/* CAPA */
 function atualizarCapa(url) {
   const img = document.getElementById("cover");
 
@@ -263,6 +228,7 @@ function atualizarCapa(url) {
   teste.src = url;
 }
 
+/* API */
 async function atualizar() {
   const statusEl = document.getElementById("status");
 
