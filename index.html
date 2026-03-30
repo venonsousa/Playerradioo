@@ -1,13 +1,123 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rádio INSANO</title>
+<style>
+body {
+  margin: 0;
+  background: #0f0f0f;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  font-family: Arial;
+}
+.player {
+  width: 340px;
+  padding: 15px;
+  border-radius: 16px;
+  background: #1a1a1a;
+  color: white;
+  text-align: center;
+  position: relative;
+}
+
+/* NEON INTELIGENTE */
+.player::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: 16px;
+  background: linear-gradient(45deg,#00ffcc,#ff00ff,#00ffcc);
+  background-size: 300%;
+  z-index: -1;
+  animation: none;
+}
+.player.playing::before { animation: neon 6s linear infinite; }
+@keyframes neon { 100% { background-position: 300% } }
+
+/* CAPA NOVA */
+.cover {
+  width: 320px;
+  height: 190px;
+  margin: auto;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 2px solid transparent;
+  background: linear-gradient(#1a1a1a, #1a1a1a) padding-box,
+              linear-gradient(45deg,#00ffcc,#ff00ff) border-box;
+}
+.cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: opacity 0.3s ease;
+}
+
+/* GRID */
+.grid { display: grid; gap: 6px; margin-top: 12px; }
+
+/* TEXTO */
+.radio-name { font-size: 12px; color: #00ffcc; letter-spacing: 1px; }
+.music-wrapper { width: 100%; overflow: hidden; white-space: nowrap; height: 22px; }
+.music-scroll { display: inline-block; font-size: 15px; font-weight: bold; }
+.artist { font-size: 13px; color: #aaa; }
+.status { font-size: 12px; }
+.online { color: #00ff00; }
+.offline { color: red; }
+
+/* CONTROLES */
+.controls button {
+  margin: 5px;
+  padding: 10px;
+  font-size: 18px;
+  background: #00ffcc;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+input[type="range"] { width: 100%; accent-color: #00ffcc; }
+
+/* SCROLL MÚSICA */
+@keyframes scrollMusic {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+</style>
+</head>
+<body>
+<div class="player">
+  <div class="cover">
+    <img id="cover" src="https://via.placeholder.com/320x190?text=Rádio">
+  </div>
+  <div class="grid">
+    <div class="radio-name">RÁDIO INSANO</div>
+    <div class="music-wrapper">
+      <div id="music" class="music-scroll">Carregando...</div>
+    </div>
+    <div id="artist" class="artist"></div>
+    <div id="status" class="status">Conectando...</div>
+    <div class="controls">
+      <button id="playBtn">▶️</button>
+      <button id="muteBtn">🔊</button>
+    </div>
+    <input type="range" id="volume" min="0" max="1" step="0.01" value="1">
+  </div>
+  <audio id="audio" preload="none">
+    <source src="https://s01.svrdedicado.org:7956/stream" type="audio/mpeg">
+  </audio>
+</div>
+
 <script>
 const audio = document.getElementById("audio");
 const playBtn = document.getElementById("playBtn");
 const muteBtn = document.getElementById("muteBtn");
 const volume = document.getElementById("volume");
 
-/* 🔹 Garantir ativação do áudio em celular */
-document.body.addEventListener("click", () => {
-  audio.load();
-}, { once: true });
+/* 🔹 Ativação áudio em celular */
+document.body.addEventListener("click", () => { audio.load(); }, { once: true });
 
 /* PLAY */
 playBtn.onclick = async () => {
@@ -25,31 +135,20 @@ playBtn.onclick = async () => {
 };
 
 /* NEON REAGE */
-audio.addEventListener("play", () => {
-  document.querySelector(".player").classList.add("playing");
-});
-
-audio.addEventListener("pause", () => {
-  document.querySelector(".player").classList.remove("playing");
-});
+audio.addEventListener("play", () => { document.querySelector(".player").classList.add("playing"); });
+audio.addEventListener("pause", () => { document.querySelector(".player").classList.remove("playing"); });
 
 /* VOLUME */
-volume.oninput = () => {
-  audio.volume = volume.value;
-};
+volume.oninput = () => { audio.volume = volume.value; };
 
 /* MUTE */
-muteBtn.onclick = () => {
-  audio.muted = !audio.muted;
-  muteBtn.textContent = audio.muted ? "🔇" : "🔊";
-};
+muteBtn.onclick = () => { audio.muted = !audio.muted; muteBtn.textContent = audio.muted ? "🔇" : "🔊"; };
 
-/* TEXTO SCROLL PROFISSIONAL */
+/* TEXTO SCROLL */
 function atualizarTextoMusica(texto) {
   const el = document.getElementById("music");
   el.style.animation = "none";
   el.innerHTML = texto;
-
   if (texto.length > 25) {
     el.innerHTML = texto + " • " + texto;
     el.style.animation = "scrollMusic 12s linear infinite";
@@ -60,41 +159,21 @@ function atualizarTextoMusica(texto) {
 function atualizarCapa(url, artista) {
   const img = document.getElementById("cover");
   const fallback = `https://ui-avatars.com/api/?name=${encodeURIComponent(artista)}&background=0f0f0f&color=00ffcc&size=320`;
-
-  if (!url || url.length < 10) {
-    img.src = fallback;
-    return;
-  }
+  if (!url || url.length < 10) { img.src = fallback; return; }
 
   const teste = new Image();
-
-  teste.onload = () => {
-    img.style.opacity = 0;
-    setTimeout(() => {
-      img.src = url;
-      img.style.opacity = 1;
-    }, 200);
-  };
-
-  teste.onerror = () => {
-    img.src = fallback;
-  };
-
-  /* 🔹 Forçar atualização sem cache */
+  teste.onload = () => { img.style.opacity = 0; setTimeout(() => { img.src = url; img.style.opacity = 1; }, 200); };
+  teste.onerror = () => { img.src = fallback; };
   teste.src = url + "?t=" + Date.now();
 }
 
-/* API COM VALIDAÇÃO XML */
+/* API COM VALIDAÇÃO */
 async function atualizar() {
   const statusEl = document.getElementById("status");
-
   try {
     const res = await fetch("https://vox.svrdedicado.org/api/g1.BGHPCaFIIwKZX_z9dZSiZKYCoM41zevN6iEQD1qI99s?nocache=" + Date.now());
-    
-    /* 🔹 Validação do XML */
     const text = await res.text();
     if (!text.includes("<")) throw new Error("Resposta inválida");
-
     const xml = new DOMParser().parseFromString(text, "text/xml");
 
     let musica = xml.querySelector("musica_atual")?.textContent || "Ao vivo";
@@ -102,7 +181,6 @@ async function atualizar() {
     let capa = xml.querySelector("capa_musica")?.textContent || "";
 
     let artista = "Desconhecido";
-
     if (musica.includes("-")) {
       let partes = musica.split("-");
       artista = partes[0].trim();
@@ -120,7 +198,6 @@ async function atualizar() {
       statusEl.textContent = "🔴 Rádio Offline";
       statusEl.className = "status offline";
     }
-
   } catch {
     statusEl.textContent = "⚠️ Erro na conexão";
     statusEl.className = "status offline";
@@ -130,3 +207,5 @@ async function atualizar() {
 setInterval(atualizar, 10000);
 atualizar();
 </script>
+</body>
+</html>
