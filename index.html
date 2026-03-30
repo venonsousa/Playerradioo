@@ -18,7 +18,7 @@ body {
 /* PLAYER FLEX HORIZONTAL */
 .player {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 15px;
   padding: 15px;
   border-radius: 16px;
@@ -52,6 +52,7 @@ body {
 .station { font-size: 13px; color: #aaa; }
 .artist { font-size: 13px; color: #fff; }
 .status { font-size: 12px; }
+#volume { width: 120px; margin-top: 6px; }
 
 /* LADO DIREITO - CAPA E CONTROLES */
 .right {
@@ -84,7 +85,6 @@ body {
   border-radius: 6px;
   cursor: pointer;
 }
-input[type="range"] { width: 100%; accent-color: #00ffcc; }
 
 /* SCROLL MÚSICA */
 .music-wrapper {
@@ -113,6 +113,7 @@ input[type="range"] { width: 100%; accent-color: #00ffcc; }
     <div class="station">Sabor Energetico</div>
     <div class="artist">🎤 Hick Barão</div>
     <div id="status" class="status offline">🔴 Rádio Offline</div>
+    <input type="range" id="volume" min="0" max="1" step="0.01" value="1">
   </div>
 
   <!-- LADO DIREITO -->
@@ -120,14 +121,13 @@ input[type="range"] { width: 100%; accent-color: #00ffcc; }
     <div class="cover">
       <img id="cover" src="https://via.placeholder.com/180x110?text=Rádio">
     </div>
-    <div class="music-wrapper">
-      <div id="music" class="music-scroll">Carregando...</div>
-    </div>
     <div class="controls">
       <button id="playBtn">▶️</button>
       <button id="muteBtn">🔊</button>
     </div>
-    <input type="range" id="volume" min="0" max="1" step="0.01" value="1">
+    <div class="music-wrapper">
+      <div id="music" class="music-scroll">Carregando...</div>
+    </div>
   </div>
 
   <audio id="audio" preload="none">
