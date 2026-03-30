@@ -76,14 +76,13 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 2px;
+  gap: 4px;
   z-index: 2;
 }
 .radio-name { font-size: 14px; color: #00ffcc; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .station { font-size: 13px; color: #aaa; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .artist { font-size: 13px; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
-#music { font-size: 13px; color: #00ffcc; white-space: nowrap; overflow: hidden; }
-.status { font-size: 12px; }
+.status { font-size: 12px; margin-top: 4px; }
 #volume { width: 120px; margin-top: 4px; }
 
 /* LADO DIREITO - CAPA E CONTROLES */
@@ -120,7 +119,19 @@ body {
   cursor: pointer;
 }
 
-/* SCROLL MÚSICA DENTRO DO QUADRO */
+/* MÚSICA ABAIXO DOS CONTROLES */
+.music-wrapper {
+  width: 206px; /* igual largura da capa */
+  overflow: hidden;
+  white-space: nowrap;
+  height: 20px;
+}
+.music-scroll {
+  display: inline-block;
+  font-size: 13px;
+  font-weight: bold;
+  color: #00ffcc;
+}
 @keyframes scrollMusic {
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }
@@ -137,7 +148,6 @@ body {
       <div class="radio-name">RÁDIO INSANO</div>
       <div class="station">Sabor Energetico</div>
       <div class="artist" id="artist">🎤 Panda e Mayke</div>
-      <div id="music">Carregando...</div>
       <div id="status" class="status offline">🔴 Rádio Offline</div>
       <input type="range" id="volume" min="0" max="1" step="0.01" value="1">
     </div>
@@ -151,6 +161,9 @@ body {
     <div class="controls">
       <button id="playBtn">▶️</button>
       <button id="muteBtn">🔊</button>
+    </div>
+    <div class="music-wrapper">
+      <div id="music" class="music-scroll">Carregando...</div>
     </div>
   </div>
 
