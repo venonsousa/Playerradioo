@@ -76,14 +76,15 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 4px;
+  gap: 2px;
   z-index: 2;
 }
 .radio-name { font-size: 14px; color: #00ffcc; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .station { font-size: 13px; color: #aaa; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .artist { font-size: 13px; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+#music { font-size: 13px; color: #00ffcc; white-space: nowrap; overflow: hidden; }
 .status { font-size: 12px; }
-#volume { width: 120px; margin-top: 6px; }
+#volume { width: 120px; margin-top: 4px; }
 
 /* LADO DIREITO - CAPA E CONTROLES */
 .right {
@@ -119,18 +120,7 @@ body {
   cursor: pointer;
 }
 
-/* SCROLL MÚSICA */
-.music-wrapper {
-  width: 100%;
-  overflow: hidden;
-  white-space: nowrap;
-  height: 20px;
-}
-.music-scroll {
-  display: inline-block;
-  font-size: 14px;
-  font-weight: bold;
-}
+/* SCROLL MÚSICA DENTRO DO QUADRO */
 @keyframes scrollMusic {
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }
@@ -147,6 +137,7 @@ body {
       <div class="radio-name">RÁDIO INSANO</div>
       <div class="station">Sabor Energetico</div>
       <div class="artist" id="artist">🎤 Panda e Mayke</div>
+      <div id="music">Carregando...</div>
       <div id="status" class="status offline">🔴 Rádio Offline</div>
       <input type="range" id="volume" min="0" max="1" step="0.01" value="1">
     </div>
@@ -161,9 +152,6 @@ body {
       <button id="playBtn">▶️</button>
       <button id="muteBtn">🔊</button>
     </div>
-    <div class="music-wrapper">
-      <div id="music" class="music-scroll">Carregando...</div>
-    </div>
   </div>
 
   <audio id="audio" preload="none">
@@ -177,7 +165,7 @@ const playBtn = document.getElementById("playBtn");
 const muteBtn = document.getElementById("muteBtn");
 const volume = document.getElementById("volume");
 
-/* Ativar áudio em celular */
+/* Ativar áudio em mobile */
 document.body.addEventListener("click", () => { audio.load(); }, { once: true });
 
 /* PLAY */
@@ -190,9 +178,7 @@ playBtn.onclick = async () => {
       audio.pause();
       playBtn.textContent = "▶️";
     }
-  } catch {
-    alert("Clique na tela primeiro para ativar o áudio");
-  }
+  } catch { /* ignora erros */ }
 };
 
 /* NEON */
@@ -205,18 +191,18 @@ volume.oninput = () => { audio.volume = volume.value; };
 /* MUTE */
 muteBtn.onclick = () => { audio.muted = !audio.muted; muteBtn.textContent = audio.muted ? "🔇" : "🔊"; };
 
-/* Scroll Música */
+/* Atualiza música com scroll */
 function atualizarTextoMusica(texto) {
   const el = document.getElementById("music");
   el.style.animation = "none";
   el.innerHTML = texto;
-  if (texto.length > 25) {
+  if (texto.length > 20) {
     el.innerHTML = texto + " • " + texto;
     el.style.animation = "scrollMusic 12s linear infinite";
   }
 }
 
-/* Capa Inteligente */
+/* Atualiza capa */
 function atualizarCapa(url, artista) {
   const img = document.getElementById("cover");
   const fallback = `https://ui-avatars.com/api/?name=${encodeURIComponent(artista)}&background=0f0f0f&color=00ffcc&size=206`;
@@ -247,7 +233,7 @@ async function atualizar() {
       musica = partes.slice(1).join("-").trim();
     }
 
-    if (artista.length > 20) artista = artista.slice(0, 20) + "...";
+    if (artista.length > 20) artista = artista.slice(0,20) + "...";
 
     document.getElementById("artist").textContent = "🎤 " + artista;
     atualizarTextoMusica(musica);
