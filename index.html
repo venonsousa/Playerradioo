@@ -15,14 +15,13 @@ body {
   font-family: Arial;
 }
 
-/* PLAYER FIXO */
+/* PLAYER FIXO COM FUNDO */
 .player {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   padding: 15px;
   border-radius: 16px;
-  background: #1a1a1a;
   color: white;
   position: relative;
   width: 551px;
@@ -32,6 +31,12 @@ body {
   min-height: 276px;
   max-height: 276px;
   box-sizing: border-box;
+
+  /* FUNDO ADICIONADO */
+  background-image: url('https://xatimg.com/image/Y9KIwtZfXsBw.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 /* NEON INTELIGENTE */
@@ -118,6 +123,10 @@ body {
   border-radius: 6px;
   cursor: pointer;
 }
+@keyframes scrollMusic {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
 </style>
 </head>
 <body>
@@ -144,7 +153,6 @@ body {
       <button id="playBtn">▶️</button>
       <button id="muteBtn">🔊</button>
     </div>
-    <!-- REMOVIDO O ELEMENTO DE MÚSICA EMBAIXO -->
   </div>
 
   <audio id="audio" preload="none">
