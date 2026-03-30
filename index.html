@@ -14,13 +14,16 @@ body {
   height: 100vh;
   font-family: Arial;
 }
+
+/* PLAYER FLEX HORIZONTAL */
 .player {
-  width: 340px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
   padding: 15px;
   border-radius: 16px;
   background: #1a1a1a;
   color: white;
-  text-align: center;
   position: relative;
 }
 
@@ -38,11 +41,28 @@ body {
 .player.playing::before { animation: neon 6s linear infinite; }
 @keyframes neon { 100% { background-position: 300% } }
 
-/* CAPA NOVA */
+/* LADO ESQUERDO - INFORMAÇÕES */
+.info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+.radio-name { font-size: 14px; color: #00ffcc; font-weight: bold; }
+.station { font-size: 13px; color: #aaa; }
+.artist { font-size: 13px; color: #fff; }
+.status { font-size: 12px; }
+
+/* LADO DIREITO - CAPA E CONTROLES */
+.right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
 .cover {
-  width: 320px;
-  height: 190px;
-  margin: auto;
+  width: 180px;
+  height: 110px;
   border-radius: 12px;
   overflow: hidden;
   border: 2px solid transparent;
@@ -55,24 +75,10 @@ body {
   object-fit: cover;
   transition: opacity 0.3s ease;
 }
-
-/* GRID */
-.grid { display: grid; gap: 6px; margin-top: 12px; }
-
-/* TEXTO */
-.radio-name { font-size: 12px; color: #00ffcc; letter-spacing: 1px; }
-.music-wrapper { width: 100%; overflow: hidden; white-space: nowrap; height: 22px; }
-.music-scroll { display: inline-block; font-size: 15px; font-weight: bold; }
-.artist { font-size: 13px; color: #aaa; }
-.status { font-size: 12px; }
-.online { color: #00ff00; }
-.offline { color: red; }
-
-/* CONTROLES */
 .controls button {
-  margin: 5px;
-  padding: 10px;
-  font-size: 18px;
+  margin: 0 5px;
+  padding: 8px;
+  font-size: 16px;
   background: #00ffcc;
   border: none;
   border-radius: 6px;
@@ -81,6 +87,17 @@ body {
 input[type="range"] { width: 100%; accent-color: #00ffcc; }
 
 /* SCROLL MÚSICA */
+.music-wrapper {
+  width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  height: 20px;
+}
+.music-scroll {
+  display: inline-block;
+  font-size: 14px;
+  font-weight: bold;
+}
 @keyframes scrollMusic {
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }
@@ -89,22 +106,30 @@ input[type="range"] { width: 100%; accent-color: #00ffcc; }
 </head>
 <body>
 <div class="player">
-  <div class="cover">
-    <img id="cover" src="https://via.placeholder.com/320x190?text=Rádio">
-  </div>
-  <div class="grid">
+
+  <!-- LADO ESQUERDO -->
+  <div class="info">
     <div class="radio-name">RÁDIO INSANO</div>
+    <div class="station">Sabor Energetico</div>
+    <div class="artist">🎤 Hick Barão</div>
+    <div id="status" class="status offline">🔴 Rádio Offline</div>
+  </div>
+
+  <!-- LADO DIREITO -->
+  <div class="right">
+    <div class="cover">
+      <img id="cover" src="https://via.placeholder.com/180x110?text=Rádio">
+    </div>
     <div class="music-wrapper">
       <div id="music" class="music-scroll">Carregando...</div>
     </div>
-    <div id="artist" class="artist"></div>
-    <div id="status" class="status">Conectando...</div>
     <div class="controls">
       <button id="playBtn">▶️</button>
       <button id="muteBtn">🔊</button>
     </div>
     <input type="range" id="volume" min="0" max="1" step="0.01" value="1">
   </div>
+
   <audio id="audio" preload="none">
     <source src="https://s01.svrdedicado.org:7956/stream" type="audio/mpeg">
   </audio>
@@ -116,7 +141,7 @@ const playBtn = document.getElementById("playBtn");
 const muteBtn = document.getElementById("muteBtn");
 const volume = document.getElementById("volume");
 
-/* 🔹 Ativação áudio em celular */
+/* Ativar áudio em celular */
 document.body.addEventListener("click", () => { audio.load(); }, { once: true });
 
 /* PLAY */
@@ -134,7 +159,7 @@ playBtn.onclick = async () => {
   }
 };
 
-/* NEON REAGE */
+/* NEON */
 audio.addEventListener("play", () => { document.querySelector(".player").classList.add("playing"); });
 audio.addEventListener("pause", () => { document.querySelector(".player").classList.remove("playing"); });
 
@@ -144,7 +169,7 @@ volume.oninput = () => { audio.volume = volume.value; };
 /* MUTE */
 muteBtn.onclick = () => { audio.muted = !audio.muted; muteBtn.textContent = audio.muted ? "🔇" : "🔊"; };
 
-/* TEXTO SCROLL */
+/* Scroll Música */
 function atualizarTextoMusica(texto) {
   const el = document.getElementById("music");
   el.style.animation = "none";
@@ -155,19 +180,18 @@ function atualizarTextoMusica(texto) {
   }
 }
 
-/* CAPA INTELIGENTE */
+/* Capa Inteligente */
 function atualizarCapa(url, artista) {
   const img = document.getElementById("cover");
-  const fallback = `https://ui-avatars.com/api/?name=${encodeURIComponent(artista)}&background=0f0f0f&color=00ffcc&size=320`;
+  const fallback = `https://ui-avatars.com/api/?name=${encodeURIComponent(artista)}&background=0f0f0f&color=00ffcc&size=180`;
   if (!url || url.length < 10) { img.src = fallback; return; }
-
   const teste = new Image();
   teste.onload = () => { img.style.opacity = 0; setTimeout(() => { img.src = url; img.style.opacity = 1; }, 200); };
   teste.onerror = () => { img.src = fallback; };
   teste.src = url + "?t=" + Date.now();
 }
 
-/* API COM VALIDAÇÃO */
+/* API */
 async function atualizar() {
   const statusEl = document.getElementById("status");
   try {
@@ -188,7 +212,7 @@ async function atualizar() {
     }
 
     atualizarTextoMusica(musica);
-    document.getElementById("artist").textContent = "🎤 " + artista;
+    document.querySelector(".artist").textContent = "🎤 " + artista;
     atualizarCapa(capa, artista);
 
     if (status === "1") {
