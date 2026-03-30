@@ -85,7 +85,7 @@ body {
 #current-music { font-size: 13px; color: #00ffcc; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 4px; }
 #volume { width: 120px; margin-top: 4px; }
 
-/* LADO DIREITO - CAPA ENCAIXADA NA BORDA */
+/* LADO DIREITO - CAPA E CONTROLES */
 .right {
   display: flex;
   flex-direction: column;
@@ -118,22 +118,6 @@ body {
   border-radius: 6px;
   cursor: pointer;
 }
-.music-wrapper {
-  width: 206px; /* mesma largura da capa */
-  overflow: hidden;
-  white-space: nowrap;
-  height: 20px;
-}
-.music-scroll {
-  display: inline-block;
-  font-size: 13px;
-  font-weight: bold;
-  color: #00ffcc;
-}
-@keyframes scrollMusic {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-}
 </style>
 </head>
 <body>
@@ -151,7 +135,7 @@ body {
     </div>
   </div>
 
-  <!-- LADO DIREITO - CAPA, CONTROLES E MÚSICA -->
+  <!-- LADO DIREITO - CAPA E CONTROLES -->
   <div class="right">
     <div class="cover">
       <img id="cover" src="https://via.placeholder.com/206x164?text=Rádio">
@@ -160,9 +144,7 @@ body {
       <button id="playBtn">▶️</button>
       <button id="muteBtn">🔊</button>
     </div>
-    <div class="music-wrapper">
-      <div id="music" class="music-scroll">Carregando...</div>
-    </div>
+    <!-- REMOVIDO O ELEMENTO DE MÚSICA EMBAIXO -->
   </div>
 
   <audio id="audio" preload="none">
@@ -202,18 +184,7 @@ volume.oninput = () => { audio.volume = volume.value; };
 /* MUTE */
 muteBtn.onclick = () => { audio.muted = !audio.muted; muteBtn.textContent = audio.muted ? "🔇" : "🔊"; };
 
-/* Atualiza música com scroll */
-function atualizarTextoMusica(texto) {
-  const el = document.getElementById("music");
-  el.style.animation = "none";
-  el.innerHTML = texto;
-  if (texto.length > 20) {
-    el.innerHTML = texto + " • " + texto;
-    el.style.animation = "scrollMusic 12s linear infinite";
-  }
-}
-
-/* Atualiza a música no quadro */
+/* Atualiza música no quadro */
 function atualizarQuadroMusica(texto) {
   const el = document.getElementById("current-music");
   el.style.animation = "none";
@@ -237,7 +208,6 @@ function atualizarCapa(url, artista) {
 
 /* API */
 async function atualizar() {
-  const statusEl = document.getElementById("status");
   try {
     const res = await fetch("https://vox.svrdedicado.org/api/g1.BGHPCaFIIwKZX_z9dZSiZKYCoM41zevN6iEQD1qI99s?nocache=" + Date.now());
     const text = await res.text();
@@ -245,7 +215,6 @@ async function atualizar() {
     const xml = new DOMParser().parseFromString(text, "text/xml");
 
     let musica = xml.querySelector("musica_atual")?.textContent || "Ao vivo";
-    let status = xml.querySelector("status")?.textContent || "0";
     let capa = xml.querySelector("capa_musica")?.textContent || "";
 
     let artista = "Desconhecido";
@@ -259,7 +228,6 @@ async function atualizar() {
 
     document.getElementById("artist").textContent = "🎤 " + artista;
     atualizarQuadroMusica(musica);
-    atualizarTextoMusica(musica);
     atualizarCapa(capa, artista);
 
   } catch {
