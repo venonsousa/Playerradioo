@@ -1,197 +1,13 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="UTF-8">
-<title>Player Rádio INSANO</title>
-
-<style>
-body {
-  margin: 0;
-  background: #0f0f0f;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  font-family: Arial;
-}
-
-.player {
-  width: 320px;
-  padding: 20px;
-  border-radius: 20px;
-  background: #1a1a1a;
-  color: white;
-  text-align: center;
-  position: relative;
-}
-
-/* BORDA NEON */
-.player::before {
-  content: "";
-  position: absolute;
-  inset: -2px;
-  border-radius: 20px;
-  background: linear-gradient(45deg,#00ffcc,#ff00ff,#00ffcc);
-  background-size: 300%;
-  animation: neon 6s linear infinite;
-  z-index: -1;
-}
-
-@keyframes neon {
-  100% { background-position: 300% }
-}
-
-/* CAPA (SEM GIRO) */
-.cover {
-  width: 180px;
-  height: 180px;
-  margin: auto;
-  border-radius: 50%;
-  overflow: hidden;
-  box-shadow: 0 0 20px #00ffcc;
-}
-
-.cover img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: opacity 0.3s ease;
-}
-
-/* GRID */
-.grid {
-  display: grid;
-  gap: 10px;
-  margin-top: 15px;
-}
-
-.radio-name {
-  font-size: 14px;
-  color: #00ffcc;
-  font-weight: bold;
-}
-
-/* MUSICA */
-.music-wrapper {
-  width: 100%;
-  overflow: hidden;
-  white-space: nowrap;
-  height: 20px;
-}
-
-.music-scroll {
-  display: inline-block;
-}
-
-/* SCROLL SUAVE */
-@keyframes scrollMusic {
-  0% { transform: translateX(100%); }
-  100% { transform: translateX(-100%); }
-}
-
-.artist {
-  font-size: 13px;
-  color: #ccc;
-}
-
-/* STATUS */
-.status { font-size: 12px; margin-top: 5px; }
-.online { color: #00ff00; }
-.offline { color: red; }
-
-/* CONTROLES */
-.controls button {
-  margin: 5px;
-  padding: 10px;
-  font-size: 18px;
-  background: #00ffcc;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-/* VOLUME */
-input[type="range"] {
-  width: 100%;
-  accent-color: #00ffcc;
-}
-
-/* EQUALIZADOR */
-.equalizer {
-  display: flex;
-  justify-content: center;
-  gap: 3px;
-  margin: 10px 0;
-}
-
-.bar {
-  width: 4px;
-  height: 10px;
-  background: #00ffcc;
-  animation: eq 1s infinite ease-in-out;
-  animation-play-state: paused;
-}
-
-.bar:nth-child(2){animation-delay:.2s}
-.bar:nth-child(3){animation-delay:.4s}
-.bar:nth-child(4){animation-delay:.6s}
-.bar:nth-child(5){animation-delay:.8s}
-
-@keyframes eq {
-  0%,100% { height: 10px; }
-  50% { height: 30px; }
-}
-</style>
-</head>
-
-<body>
-
-<div class="player">
-
-<div class="cover">
-  <img id="cover" src="https://via.placeholder.com/300x300?text=Rádio">
-</div>
-
-<div class="grid">
-
-  <div class="radio-name">RÁDIO INSANO</div>
-
-  <div class="music-wrapper">
-    <div id="music" class="music-scroll">Carregando...</div>
-  </div>
-
-  <div id="artist" class="artist"></div>
-
-  <div id="status" class="status">Conectando...</div>
-
-  <div class="equalizer">
-    <div class="bar"></div>
-    <div class="bar"></div>
-    <div class="bar"></div>
-    <div class="bar"></div>
-    <div class="bar"></div>
-  </div>
-
-  <div class="controls">
-    <button id="playBtn">▶️</button>
-    <button id="muteBtn">🔊</button>
-  </div>
-
-  <input type="range" id="volume" min="0" max="1" step="0.01" value="1">
-
-</div>
-
-<audio id="audio" preload="none">
-  <source src="https://s01.svrdedicado.org:7956/stream" type="audio/mpeg">
-</audio>
-
-</div>
-
 <script>
 const audio = document.getElementById("audio");
 const playBtn = document.getElementById("playBtn");
 const muteBtn = document.getElementById("muteBtn");
 const volume = document.getElementById("volume");
+
+/* 🔹 Garantir ativação do áudio em celular */
+document.body.addEventListener("click", () => {
+  audio.load();
+}, { once: true });
 
 /* PLAY */
 playBtn.onclick = async () => {
@@ -204,22 +20,18 @@ playBtn.onclick = async () => {
       playBtn.textContent = "▶️";
     }
   } catch {
-    alert("Clique novamente para ativar o áudio");
+    alert("Clique na tela primeiro para ativar o áudio");
   }
 };
 
-/* EQUALIZADOR REAGE */
-audio.onplay = () => {
-  document.querySelectorAll(".bar").forEach(bar => {
-    bar.style.animationPlayState = "running";
-  });
-};
+/* NEON REAGE */
+audio.addEventListener("play", () => {
+  document.querySelector(".player").classList.add("playing");
+});
 
-audio.onpause = () => {
-  document.querySelectorAll(".bar").forEach(bar => {
-    bar.style.animationPlayState = "paused";
-  });
-};
+audio.addEventListener("pause", () => {
+  document.querySelector(".player").classList.remove("playing");
+});
 
 /* VOLUME */
 volume.oninput = () => {
@@ -232,29 +44,30 @@ muteBtn.onclick = () => {
   muteBtn.textContent = audio.muted ? "🔇" : "🔊";
 };
 
-/* TEXTO INTELIGENTE */
+/* TEXTO SCROLL PROFISSIONAL */
 function atualizarTextoMusica(texto) {
   const el = document.getElementById("music");
-
-  el.textContent = texto;
+  el.style.animation = "none";
+  el.innerHTML = texto;
 
   if (texto.length > 25) {
+    el.innerHTML = texto + " • " + texto;
     el.style.animation = "scrollMusic 12s linear infinite";
-  } else {
-    el.style.animation = "none";
   }
 }
 
-/* CAPA */
-function atualizarCapa(url) {
+/* CAPA INTELIGENTE */
+function atualizarCapa(url, artista) {
   const img = document.getElementById("cover");
+  const fallback = `https://ui-avatars.com/api/?name=${encodeURIComponent(artista)}&background=0f0f0f&color=00ffcc&size=320`;
 
-  if (!url) {
-    img.src = "https://via.placeholder.com/300x300?text=Sem+Capa";
+  if (!url || url.length < 10) {
+    img.src = fallback;
     return;
   }
 
   const teste = new Image();
+
   teste.onload = () => {
     img.style.opacity = 0;
     setTimeout(() => {
@@ -262,22 +75,26 @@ function atualizarCapa(url) {
       img.style.opacity = 1;
     }, 200);
   };
+
   teste.onerror = () => {
-    img.src = "https://via.placeholder.com/300x300?text=Erro";
+    img.src = fallback;
   };
-  teste.src = url;
+
+  /* 🔹 Forçar atualização sem cache */
+  teste.src = url + "?t=" + Date.now();
 }
 
-/* API */
+/* API COM VALIDAÇÃO XML */
 async function atualizar() {
   const statusEl = document.getElementById("status");
 
   try {
-    const res = await fetch("https://vox.svrdedicado.org/api/g1.BGHPCaFIIwKZX_z9dZSiZKYCoM41zevN6iEQD1qI99s");
-
-    if (!res.ok) throw new Error();
-
+    const res = await fetch("https://vox.svrdedicado.org/api/g1.BGHPCaFIIwKZX_z9dZSiZKYCoM41zevN6iEQD1qI99s?nocache=" + Date.now());
+    
+    /* 🔹 Validação do XML */
     const text = await res.text();
+    if (!text.includes("<")) throw new Error("Resposta inválida");
+
     const xml = new DOMParser().parseFromString(text, "text/xml");
 
     let musica = xml.querySelector("musica_atual")?.textContent || "Ao vivo";
@@ -294,10 +111,9 @@ async function atualizar() {
 
     atualizarTextoMusica(musica);
     document.getElementById("artist").textContent = "🎤 " + artista;
+    atualizarCapa(capa, artista);
 
-    atualizarCapa(capa);
-
-    if (status == "1") {
+    if (status === "1") {
       statusEl.textContent = "🟢 Rádio Online";
       statusEl.className = "status online";
     } else {
@@ -314,6 +130,3 @@ async function atualizar() {
 setInterval(atualizar, 10000);
 atualizar();
 </script>
-
-</body>
-</html>
