@@ -2,7 +2,8 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>Player Rádio INSANO</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rádio INSANO</title>
 
 <style>
 body {
@@ -25,7 +26,6 @@ body {
   position: relative;
 }
 
-/* BORDA NEON */
 .player::before {
   content: "";
   position: absolute;
@@ -41,7 +41,6 @@ body {
   100% { background-position: 300% }
 }
 
-/* CAPA (SEM GIRO) */
 .cover {
   width: 180px;
   height: 180px;
@@ -58,7 +57,6 @@ body {
   transition: opacity 0.3s ease;
 }
 
-/* GRID */
 .grid {
   display: grid;
   gap: 10px;
@@ -71,7 +69,6 @@ body {
   font-weight: bold;
 }
 
-/* MUSICA */
 .music-wrapper {
   width: 100%;
   overflow: hidden;
@@ -83,7 +80,6 @@ body {
   display: inline-block;
 }
 
-/* SCROLL SUAVE */
 @keyframes scrollMusic {
   0% { transform: translateX(100%); }
   100% { transform: translateX(-100%); }
@@ -94,12 +90,10 @@ body {
   color: #ccc;
 }
 
-/* STATUS */
 .status { font-size: 12px; margin-top: 5px; }
 .online { color: #00ff00; }
 .offline { color: red; }
 
-/* CONTROLES */
 .controls button {
   margin: 5px;
   padding: 10px;
@@ -110,13 +104,11 @@ body {
   cursor: pointer;
 }
 
-/* VOLUME */
 input[type="range"] {
   width: 100%;
   accent-color: #00ffcc;
 }
 
-/* EQUALIZADOR */
 .equalizer {
   display: flex;
   justify-content: center;
@@ -148,42 +140,41 @@ input[type="range"] {
 
 <div class="player">
 
-<div class="cover">
-  <img id="cover" src="https://via.placeholder.com/300x300?text=Rádio">
-</div>
-
-<div class="grid">
-
-  <div class="radio-name">RÁDIO INSANO</div>
-
-  <div class="music-wrapper">
-    <div id="music" class="music-scroll">Carregando...</div>
+  <div class="cover">
+    <img id="cover" src="https://via.placeholder.com/300x300?text=Rádio">
   </div>
 
-  <div id="artist" class="artist"></div>
+  <div class="grid">
 
-  <div id="status" class="status">Conectando...</div>
+    <div class="radio-name">RÁDIO INSANO</div>
 
-  <div class="equalizer">
-    <div class="bar"></div>
-    <div class="bar"></div>
-    <div class="bar"></div>
-    <div class="bar"></div>
-    <div class="bar"></div>
+    <div class="music-wrapper">
+      <div id="music" class="music-scroll">Carregando...</div>
+    </div>
+
+    <div id="artist" class="artist"></div>
+    <div id="status" class="status">Conectando...</div>
+
+    <div class="equalizer">
+      <div class="bar"></div>
+      <div class="bar"></div>
+      <div class="bar"></div>
+      <div class="bar"></div>
+      <div class="bar"></div>
+    </div>
+
+    <div class="controls">
+      <button id="playBtn">▶️</button>
+      <button id="muteBtn">🔊</button>
+    </div>
+
+    <input type="range" id="volume" min="0" max="1" step="0.01" value="1">
+
   </div>
 
-  <div class="controls">
-    <button id="playBtn">▶️</button>
-    <button id="muteBtn">🔊</button>
-  </div>
-
-  <input type="range" id="volume" min="0" max="1" step="0.01" value="1">
-
-</div>
-
-<audio id="audio" preload="none">
-  <source src="https://s01.svrdedicado.org:7956/stream" type="audio/mpeg">
-</audio>
+  <audio id="audio" preload="none">
+    <source src="https://s01.svrdedicado.org:7956/stream" type="audio/mpeg">
+  </audio>
 
 </div>
 
@@ -193,7 +184,6 @@ const playBtn = document.getElementById("playBtn");
 const muteBtn = document.getElementById("muteBtn");
 const volume = document.getElementById("volume");
 
-/* PLAY */
 playBtn.onclick = async () => {
   try {
     if (audio.paused) {
@@ -204,48 +194,44 @@ playBtn.onclick = async () => {
       playBtn.textContent = "▶️";
     }
   } catch {
-    alert("Clique novamente para ativar o áudio");
+    alert("Clique na tela primeiro para ativar o áudio");
   }
 };
 
-/* EQUALIZADOR REAGE */
-audio.onplay = () => {
+audio.addEventListener("play", () => {
   document.querySelectorAll(".bar").forEach(bar => {
     bar.style.animationPlayState = "running";
   });
-};
+});
 
-audio.onpause = () => {
+audio.addEventListener("pause", () => {
   document.querySelectorAll(".bar").forEach(bar => {
     bar.style.animationPlayState = "paused";
   });
-};
+});
 
-/* VOLUME */
 volume.oninput = () => {
   audio.volume = volume.value;
 };
 
-/* MUTE */
 muteBtn.onclick = () => {
   audio.muted = !audio.muted;
   muteBtn.textContent = audio.muted ? "🔇" : "🔊";
 };
 
-/* TEXTO INTELIGENTE */
 function atualizarTextoMusica(texto) {
   const el = document.getElementById("music");
+
+  el.style.animation = "none";
+  el.offsetHeight;
 
   el.textContent = texto;
 
   if (texto.length > 25) {
     el.style.animation = "scrollMusic 12s linear infinite";
-  } else {
-    el.style.animation = "none";
   }
 }
 
-/* CAPA */
 function atualizarCapa(url) {
   const img = document.getElementById("cover");
 
@@ -268,14 +254,11 @@ function atualizarCapa(url) {
   teste.src = url;
 }
 
-/* API */
 async function atualizar() {
   const statusEl = document.getElementById("status");
 
   try {
-    const res = await fetch("https://vox.svrdedicado.org/api/g1.BGHPCaFIIwKZX_z9dZSiZKYCoM41zevN6iEQD1qI99s");
-
-    if (!res.ok) throw new Error();
+    const res = await fetch("https://vox.svrdedicado.org/api/g1.BGHPCaFIIwKZX_z9dZSiZKYCoM41zevN6iEQD1qI99s?nocache=" + Date.now());
 
     const text = await res.text();
     const xml = new DOMParser().parseFromString(text, "text/xml");
@@ -294,10 +277,9 @@ async function atualizar() {
 
     atualizarTextoMusica(musica);
     document.getElementById("artist").textContent = "🎤 " + artista;
-
     atualizarCapa(capa);
 
-    if (status == "1") {
+    if (status === "1") {
       statusEl.textContent = "🟢 Rádio Online";
       statusEl.className = "status online";
     } else {
