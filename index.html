@@ -33,7 +33,7 @@ body {
   box-sizing: border-box;
 
   /* FUNDO */
-  background-image: url('https://xatimg.com/image/BsxTrpqhQUsn.png');
+  background-image: url('https://xatimg.com/image/Y9KIwtZfXsBw.png');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -64,7 +64,7 @@ body {
   justify-content: center;
   padding: 10px;
   box-sizing: border-box;
-  z-index: 2; /* acima das letras */
+  z-index: 2; 
   flex-shrink: 0;
 }
 .info-background {
@@ -86,7 +86,7 @@ body {
   justify-content: center;
   gap: 4px;
   z-index: 2;
-  padding-left: 53px; /* afastamento da borda esquerda */
+  padding-left: 53px; 
   box-sizing: border-box;
 }
 
@@ -94,7 +94,7 @@ body {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: calc(100% - 10px); /* garante que não ultrapasse o quadro */
+  max-width: calc(100% - 10px);
 }
 
 .radio-name { font-size: 16px; color: #00ffcc; font-weight: bold; }
@@ -107,7 +107,7 @@ body {
 .right {
   display: flex;
   flex-direction: column;
-  align-items: flex-end; /* encosta à borda direita */
+  align-items: flex-end; 
   gap: 8px;
   flex-shrink: 0;
 }
@@ -127,33 +127,16 @@ body {
   object-fit: cover;
   transition: opacity 0.3s ease;
 }
-.controls button {
-  margin: 0 5px;
-  padding: 8px;
-  font-size: 16px;
+
+/* BOTÃO PLAY/PAUSE ÚNICO */
+#playBtn {
+  padding: 12px 24px;
+  font-size: 18px;
   background: #00ffcc;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
 }
-
-/* LETRAS CAINDO */
-.letter {
-  position: absolute;
-  font-size: 14px;
-  color: #00ffcc;
-  user-select: none;
-  pointer-events: none;
-  font-weight: bold;
-  opacity: 0.8;
-  animation-name: fall;
-  animation-timing-function: linear;
-}
-@keyframes fall {
-  0% { transform: translateY(-20px); opacity: 1; }
-  100% { transform: translateY(300px); opacity: 0; }
-}
-
 </style>
 </head>
 <body>
@@ -176,10 +159,7 @@ body {
     <div class="cover">
       <img id="cover" src="https://via.placeholder.com/206x164?text=Rádio">
     </div>
-    <div class="controls">
-      <button id="playBtn">▶️</button>
-      <button id="muteBtn">🔊</button>
-    </div>
+    <button id="playBtn">▶️</button>
   </div>
 
   <audio id="audio" preload="none">
@@ -190,36 +170,33 @@ body {
 <script>
 const audio = document.getElementById("audio");
 const playBtn = document.getElementById("playBtn");
-const muteBtn = document.getElementById("muteBtn");
 const volume = document.getElementById("volume");
 const player = document.getElementById("player");
 
-/* PLAY */
+/* BOTÃO PLAY/PAUSE */
 playBtn.onclick = async () => {
   try {
     if (audio.paused) {
       await audio.play();
       playBtn.textContent = "⏸️";
+      player.classList.add("playing");
     } else {
       audio.pause();
       playBtn.textContent = "▶️";
+      player.classList.remove("playing");
     }
   } catch {}
 };
-audio.addEventListener("play", () => { player.classList.add("playing"); });
-audio.addEventListener("pause", () => { player.classList.remove("playing"); });
 
+/* VOLUME */
 volume.oninput = () => { audio.volume = volume.value; };
-muteBtn.onclick = () => { audio.muted = !audio.muted; muteBtn.textContent = audio.muted ? "🔇" : "🔊"; };
 
-/* Atualiza música no quadro */
+/* ATUALIZAÇÃO DE MÚSICA E CAPA */
 function atualizarQuadroMusica(texto) {
   const el = document.getElementById("current-music");
-  el.style.animation = "none";
   el.innerHTML = texto;
 }
 
-/* Atualiza capa */
 function atualizarCapa(url, artista) {
   const img = document.getElementById("cover");
   const fallback = `https://ui-avatars.com/api/?name=${encodeURIComponent(artista)}&background=0f0f0f&color=00ffcc&size=206`;
@@ -252,29 +229,12 @@ async function atualizar() {
     atualizarQuadroMusica(musica);
     atualizarCapa(capa, artista);
 
-    criarLetras(musica);
-
   } catch {
     atualizarQuadroMusica("Erro na conexão");
   }
 }
 setInterval(atualizar, 10000);
 atualizar();
-
-/* LETRAS CAINDO */
-function criarLetras(texto) {
-  document.querySelectorAll(".letter").forEach(l => l.remove());
-  const chars = texto.split("").filter(c => c !== " ");
-  for (let i = 0; i < chars.length; i++) {
-    const span = document.createElement("span");
-    span.className = "letter";
-    span.textContent = chars[i];
-    span.style.left = Math.random() * (player.offsetWidth - 20) + "px";
-    span.style.animationDuration = 3 + Math.random() * 3 + "s";
-    player.appendChild(span);
-    span.addEventListener("animationend", () => span.remove());
-  }
-}
 </script>
 </body>
 </html>
