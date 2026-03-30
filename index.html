@@ -26,7 +26,7 @@ body {
   position: relative;
 }
 
-/* NEON PARADO */
+/* NEON CONTROLADO */
 .player::before {
   content: "";
   position: absolute;
@@ -38,7 +38,6 @@ body {
   animation: none;
 }
 
-/* NEON ATIVA AO TOCAR */
 .player.playing::before {
   animation: neon 6s linear infinite;
 }
@@ -190,7 +189,6 @@ const playBtn = document.getElementById("playBtn");
 const muteBtn = document.getElementById("muteBtn");
 const volume = document.getElementById("volume");
 
-/* PLAY */
 playBtn.onclick = async () => {
   try {
     if (audio.paused) {
@@ -205,7 +203,6 @@ playBtn.onclick = async () => {
   }
 };
 
-/* PLAY/PAUSE VISUAL */
 audio.addEventListener("play", () => {
   document.querySelectorAll(".bar").forEach(bar => {
     bar.style.animationPlayState = "running";
@@ -222,18 +219,15 @@ audio.addEventListener("pause", () => {
   document.querySelector(".player").classList.remove("playing");
 });
 
-/* VOLUME */
 volume.oninput = () => {
   audio.volume = volume.value;
 };
 
-/* MUTE */
 muteBtn.onclick = () => {
   audio.muted = !audio.muted;
   muteBtn.textContent = audio.muted ? "🔇" : "🔊";
 };
 
-/* TEXTO */
 function atualizarTextoMusica(texto) {
   const el = document.getElementById("music");
 
@@ -247,7 +241,6 @@ function atualizarTextoMusica(texto) {
   }
 }
 
-/* CAPA */
 function atualizarCapa(url) {
   const img = document.getElementById("cover");
 
@@ -270,7 +263,6 @@ function atualizarCapa(url) {
   teste.src = url;
 }
 
-/* API */
 async function atualizar() {
   const statusEl = document.getElementById("status");
 
