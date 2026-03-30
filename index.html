@@ -26,6 +26,7 @@ body {
   position: relative;
 }
 
+/* NEON PARADO */
 .player::before {
   content: "";
   position: absolute;
@@ -33,8 +34,13 @@ body {
   border-radius: 20px;
   background: linear-gradient(45deg,#00ffcc,#ff00ff,#00ffcc);
   background-size: 300%;
-  animation: neon 6s linear infinite;
   z-index: -1;
+  animation: none;
+}
+
+/* NEON ATIVA AO TOCAR */
+.player.playing::before {
+  animation: neon 6s linear infinite;
 }
 
 @keyframes neon {
@@ -184,6 +190,7 @@ const playBtn = document.getElementById("playBtn");
 const muteBtn = document.getElementById("muteBtn");
 const volume = document.getElementById("volume");
 
+/* PLAY */
 playBtn.onclick = async () => {
   try {
     if (audio.paused) {
@@ -198,27 +205,35 @@ playBtn.onclick = async () => {
   }
 };
 
+/* PLAY/PAUSE VISUAL */
 audio.addEventListener("play", () => {
   document.querySelectorAll(".bar").forEach(bar => {
     bar.style.animationPlayState = "running";
   });
+
+  document.querySelector(".player").classList.add("playing");
 });
 
 audio.addEventListener("pause", () => {
   document.querySelectorAll(".bar").forEach(bar => {
     bar.style.animationPlayState = "paused";
   });
+
+  document.querySelector(".player").classList.remove("playing");
 });
 
+/* VOLUME */
 volume.oninput = () => {
   audio.volume = volume.value;
 };
 
+/* MUTE */
 muteBtn.onclick = () => {
   audio.muted = !audio.muted;
   muteBtn.textContent = audio.muted ? "🔇" : "🔊";
 };
 
+/* TEXTO */
 function atualizarTextoMusica(texto) {
   const el = document.getElementById("music");
 
@@ -232,6 +247,7 @@ function atualizarTextoMusica(texto) {
   }
 }
 
+/* CAPA */
 function atualizarCapa(url) {
   const img = document.getElementById("cover");
 
@@ -254,6 +270,7 @@ function atualizarCapa(url) {
   teste.src = url;
 }
 
+/* API */
 async function atualizar() {
   const statusEl = document.getElementById("status");
 
