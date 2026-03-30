@@ -2,8 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Rádio INSANO</title>
+<title>Player Rádio INSANO</title>
 
 <style>
 body {
@@ -17,45 +16,39 @@ body {
 }
 
 .player {
-  width: 340px;
-  padding: 15px;
-  border-radius: 16px;
+  width: 320px;
+  padding: 20px;
+  border-radius: 20px;
   background: #1a1a1a;
   color: white;
   text-align: center;
   position: relative;
 }
 
-/* NEON INTELIGENTE */
+/* BORDA NEON */
 .player::before {
   content: "";
   position: absolute;
   inset: -2px;
-  border-radius: 16px;
+  border-radius: 20px;
   background: linear-gradient(45deg,#00ffcc,#ff00ff,#00ffcc);
   background-size: 300%;
-  z-index: -1;
-  animation: none;
-}
-
-.player.playing::before {
   animation: neon 6s linear infinite;
+  z-index: -1;
 }
 
 @keyframes neon {
   100% { background-position: 300% }
 }
 
-/* CAPA NOVA */
+/* CAPA (SEM GIRO) */
 .cover {
-  width: 320px;
-  height: 190px;
+  width: 180px;
+  height: 180px;
   margin: auto;
-  border-radius: 12px;
+  border-radius: 50%;
   overflow: hidden;
-  border: 2px solid transparent;
-  background: linear-gradient(#1a1a1a, #1a1a1a) padding-box,
-              linear-gradient(45deg,#00ffcc,#ff00ff) border-box;
+  box-shadow: 0 0 20px #00ffcc;
 }
 
 .cover img {
@@ -68,36 +61,41 @@ body {
 /* GRID */
 .grid {
   display: grid;
-  gap: 6px;
-  margin-top: 12px;
+  gap: 10px;
+  margin-top: 15px;
 }
 
-/* TEXTO */
 .radio-name {
-  font-size: 12px;
+  font-size: 14px;
   color: #00ffcc;
-  letter-spacing: 1px;
+  font-weight: bold;
 }
 
+/* MUSICA */
 .music-wrapper {
   width: 100%;
   overflow: hidden;
   white-space: nowrap;
-  height: 22px;
+  height: 20px;
 }
 
 .music-scroll {
   display: inline-block;
-  font-size: 15px;
-  font-weight: bold;
+}
+
+/* SCROLL SUAVE */
+@keyframes scrollMusic {
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
 }
 
 .artist {
   font-size: 13px;
-  color: #aaa;
+  color: #ccc;
 }
 
-.status { font-size: 12px; }
+/* STATUS */
+.status { font-size: 12px; margin-top: 5px; }
 .online { color: #00ff00; }
 .offline { color: red; }
 
@@ -108,13 +106,40 @@ body {
   font-size: 18px;
   background: #00ffcc;
   border: none;
-  border-radius: 6px;
+  border-radius: 5px;
   cursor: pointer;
 }
 
+/* VOLUME */
 input[type="range"] {
   width: 100%;
   accent-color: #00ffcc;
+}
+
+/* EQUALIZADOR */
+.equalizer {
+  display: flex;
+  justify-content: center;
+  gap: 3px;
+  margin: 10px 0;
+}
+
+.bar {
+  width: 4px;
+  height: 10px;
+  background: #00ffcc;
+  animation: eq 1s infinite ease-in-out;
+  animation-play-state: paused;
+}
+
+.bar:nth-child(2){animation-delay:.2s}
+.bar:nth-child(3){animation-delay:.4s}
+.bar:nth-child(4){animation-delay:.6s}
+.bar:nth-child(5){animation-delay:.8s}
+
+@keyframes eq {
+  0%,100% { height: 10px; }
+  50% { height: 30px; }
 }
 </style>
 </head>
@@ -123,33 +148,42 @@ input[type="range"] {
 
 <div class="player">
 
-  <div class="cover">
-    <img id="cover" src="https://via.placeholder.com/320x190?text=Rádio">
+<div class="cover">
+  <img id="cover" src="https://via.placeholder.com/300x300?text=Rádio">
+</div>
+
+<div class="grid">
+
+  <div class="radio-name">RÁDIO INSANO</div>
+
+  <div class="music-wrapper">
+    <div id="music" class="music-scroll">Carregando...</div>
   </div>
 
-  <div class="grid">
+  <div id="artist" class="artist"></div>
 
-    <div class="radio-name">RÁDIO INSANO</div>
+  <div id="status" class="status">Conectando...</div>
 
-    <div class="music-wrapper">
-      <div id="music" class="music-scroll">Carregando...</div>
-    </div>
-
-    <div id="artist" class="artist"></div>
-    <div id="status" class="status">Conectando...</div>
-
-    <div class="controls">
-      <button id="playBtn">▶️</button>
-      <button id="muteBtn">🔊</button>
-    </div>
-
-    <input type="range" id="volume" min="0" max="1" step="0.01" value="1">
-
+  <div class="equalizer">
+    <div class="bar"></div>
+    <div class="bar"></div>
+    <div class="bar"></div>
+    <div class="bar"></div>
+    <div class="bar"></div>
   </div>
 
-  <audio id="audio" preload="none">
-    <source src="https://s01.svrdedicado.org:7956/stream" type="audio/mpeg">
-  </audio>
+  <div class="controls">
+    <button id="playBtn">▶️</button>
+    <button id="muteBtn">🔊</button>
+  </div>
+
+  <input type="range" id="volume" min="0" max="1" step="0.01" value="1">
+
+</div>
+
+<audio id="audio" preload="none">
+  <source src="https://s01.svrdedicado.org:7956/stream" type="audio/mpeg">
+</audio>
 
 </div>
 
@@ -170,18 +204,22 @@ playBtn.onclick = async () => {
       playBtn.textContent = "▶️";
     }
   } catch {
-    alert("Clique na tela primeiro para ativar o áudio");
+    alert("Clique novamente para ativar o áudio");
   }
 };
 
-/* NEON REAGE */
-audio.addEventListener("play", () => {
-  document.querySelector(".player").classList.add("playing");
-});
+/* EQUALIZADOR REAGE */
+audio.onplay = () => {
+  document.querySelectorAll(".bar").forEach(bar => {
+    bar.style.animationPlayState = "running";
+  });
+};
 
-audio.addEventListener("pause", () => {
-  document.querySelector(".player").classList.remove("playing");
-});
+audio.onpause = () => {
+  document.querySelectorAll(".bar").forEach(bar => {
+    bar.style.animationPlayState = "paused";
+  });
+};
 
 /* VOLUME */
 volume.oninput = () => {
@@ -194,33 +232,29 @@ muteBtn.onclick = () => {
   muteBtn.textContent = audio.muted ? "🔇" : "🔊";
 };
 
-/* TEXTO */
+/* TEXTO INTELIGENTE */
 function atualizarTextoMusica(texto) {
   const el = document.getElementById("music");
-
-  el.style.animation = "none";
-  el.offsetHeight;
 
   el.textContent = texto;
 
   if (texto.length > 25) {
     el.style.animation = "scrollMusic 12s linear infinite";
+  } else {
+    el.style.animation = "none";
   }
 }
 
-/* CAPA INTELIGENTE */
-function atualizarCapa(url, artista) {
+/* CAPA */
+function atualizarCapa(url) {
   const img = document.getElementById("cover");
 
-  const fallback = `https://ui-avatars.com/api/?name=${encodeURIComponent(artista)}&background=0f0f0f&color=00ffcc&size=320`;
-
-  if (!url || url.length < 10) {
-    img.src = fallback;
+  if (!url) {
+    img.src = "https://via.placeholder.com/300x300?text=Sem+Capa";
     return;
   }
 
   const teste = new Image();
-
   teste.onload = () => {
     img.style.opacity = 0;
     setTimeout(() => {
@@ -228,11 +262,9 @@ function atualizarCapa(url, artista) {
       img.style.opacity = 1;
     }, 200);
   };
-
   teste.onerror = () => {
-    img.src = fallback;
+    img.src = "https://via.placeholder.com/300x300?text=Erro";
   };
-
   teste.src = url;
 }
 
@@ -241,7 +273,9 @@ async function atualizar() {
   const statusEl = document.getElementById("status");
 
   try {
-    const res = await fetch("https://vox.svrdedicado.org/api/g1.BGHPCaFIIwKZX_z9dZSiZKYCoM41zevN6iEQD1qI99s?nocache=" + Date.now());
+    const res = await fetch("https://vox.svrdedicado.org/api/g1.BGHPCaFIIwKZX_z9dZSiZKYCoM41zevN6iEQD1qI99s");
+
+    if (!res.ok) throw new Error();
 
     const text = await res.text();
     const xml = new DOMParser().parseFromString(text, "text/xml");
@@ -261,9 +295,9 @@ async function atualizar() {
     atualizarTextoMusica(musica);
     document.getElementById("artist").textContent = "🎤 " + artista;
 
-    atualizarCapa(capa, artista);
+    atualizarCapa(capa);
 
-    if (status === "1") {
+    if (status == "1") {
       statusEl.textContent = "🟢 Rádio Online";
       statusEl.className = "status online";
     } else {
