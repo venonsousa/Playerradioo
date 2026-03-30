@@ -41,16 +41,39 @@ body {
 .player.playing::before { animation: neon 6s linear infinite; }
 @keyframes neon { 100% { background-position: 300% } }
 
-/* LADO ESQUERDO - INFORMAÇÕES */
+/* LADO ESQUERDO - QUADRO DE INFORMAÇÕES */
+.info-container {
+  position: relative;
+  width: 177px;
+  height: 123px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 10px;
+  box-sizing: border-box;
+  z-index: 1;
+}
+.info-background {
+  position: absolute;
+  width: 177px;
+  height: 123px;
+  top: 0;
+  left: 0;
+  border-radius: 12px;
+  background: linear-gradient(45deg,#00ffcc,#ff00ff);
+  opacity: 0.15;
+  z-index: 0;
+}
 .info {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  justify-content: center;
   gap: 4px;
+  z-index: 2;
 }
-.radio-name { font-size: 14px; color: #00ffcc; font-weight: bold; }
-.station { font-size: 13px; color: #aaa; }
-.artist { font-size: 13px; color: #fff; }
+.radio-name { font-size: 14px; color: #00ffcc; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.station { font-size: 13px; color: #aaa; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.artist { font-size: 13px; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
 .status { font-size: 12px; }
 #volume { width: 120px; margin-top: 6px; }
 
@@ -107,13 +130,16 @@ body {
 <body>
 <div class="player">
 
-  <!-- LADO ESQUERDO -->
-  <div class="info">
-    <div class="radio-name">RÁDIO INSANO</div>
-    <div class="station">Sabor Energetico</div>
-    <div class="artist">🎤 Hick Barão</div>
-    <div id="status" class="status offline">🔴 Rádio Offline</div>
-    <input type="range" id="volume" min="0" max="1" step="0.01" value="1">
+  <!-- LADO ESQUERDO - QUADRO DE INFORMAÇÕES -->
+  <div class="info-container">
+    <div class="info-background"></div>
+    <div class="info">
+      <div class="radio-name">RÁDIO INSANO</div>
+      <div class="station">Sabor Energetico</div>
+      <div class="artist" id="artist">🎤 Panda e Mayke</div>
+      <div id="status" class="status offline">🔴 Rádio Offline</div>
+      <input type="range" id="volume" min="0" max="1" step="0.01" value="1">
+    </div>
   </div>
 
   <!-- LADO DIREITO -->
@@ -211,8 +237,11 @@ async function atualizar() {
       musica = partes.slice(1).join("-").trim();
     }
 
+    // Limita tamanho do artista
+    if (artista.length > 20) artista = artista.slice(0, 20) + "...";
+
+    document.getElementById("artist").textContent = "🎤 " + artista;
     atualizarTextoMusica(musica);
-    document.querySelector(".artist").textContent = "🎤 " + artista;
     atualizarCapa(capa, artista);
 
     if (status === "1") {
