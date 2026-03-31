@@ -43,20 +43,6 @@ body {
   pointer-events: none;
 }
 
-/* NEON INTELIGENTE */
-.player::before {
-  content: "";
-  position: absolute;
-  inset: -2px;
-  border-radius: 16px;
-  background: linear-gradient(45deg,#00ffcc,#ff00ff,#00ffcc);
-  background-size: 300%;
-  z-index: -1;
-  animation: none;
-}
-.player.playing::before { animation: neon 6s linear infinite; }
-@keyframes neon { 100% { background-position: 300% } }
-
 /* LADO ESQUERDO - INFORMAÇÕES */
 .info-container {
   position: relative;
