@@ -119,14 +119,26 @@ body {
   transition: opacity 0.3s ease;
 }
 
-/* BOTÃO PLAY/PAUSE */
+/* BOTÃO PLAY/PAUSE ESTILIZADO */
 #playBtn {
-  padding: 12px 24px;
-  font-size: 18px;
-  background: #00ffcc;
-  border: none;
-  border-radius: 8px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 2px solid #00ffcc;
+  background: linear-gradient(135deg, #0f0f0f, #1a1a1a);
+  color: #00ffcc;
+  font-size: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 2;
+}
+#playBtn:hover {
+  transform: scale(1.2);
+  background: linear-gradient(135deg, #00ffcc, #ff00ff);
+  color: #0f0f0f;
 }
 
 /* BOTÕES DE REDES SOCIAIS */
@@ -181,10 +193,11 @@ body {
     <div class="cover">
       <img id="cover" src="https://via.placeholder.com/206x164?text=Rádio">
     </div>
-    <button id="playBtn">▶️</button>
+    <button id="playBtn" class="paused"><span class="icon">▶️</span></button>
     <div class="socials">
       <a href="https://www.facebook.com/" target="_blank" class="social-btn">📘</a>
       <a href="https://www.instagram.com/" target="_blank" class="social-btn">📸</a>
+      <a href="https://twitter.com/" target="_blank" class="social-btn">🐦</a>
     </div>
   </div>
 
@@ -204,11 +217,15 @@ playBtn.onclick = async () => {
   try {
     if (audio.paused) {
       await audio.play();
-      playBtn.textContent = "⏸️";
+      playBtn.classList.add("playing");
+      playBtn.classList.remove("paused");
+      playBtn.querySelector(".icon").textContent = "⏸️";
       player.classList.add("playing");
     } else {
       audio.pause();
-      playBtn.textContent = "▶️";
+      playBtn.classList.add("paused");
+      playBtn.classList.remove("playing");
+      playBtn.querySelector(".icon").textContent = "▶️";
       player.classList.remove("playing");
     }
   } catch (e) { console.error(e); }
