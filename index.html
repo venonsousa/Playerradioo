@@ -198,6 +198,22 @@ const playBtn = document.getElementById("playBtn");
 const volume = document.getElementById("volume");
 const player = document.getElementById("player");
 
+/* FUNÇÃO PARA BUSCAR CAPA NO ITUNES */
+async function buscarCapaItunes(artista, musica) {
+  try {
+    const termo = encodeURIComponent(`${artista} ${musica}`);
+    const url = `https://itunes.apple.com/search?term=${termo}&entity=song&limit=1`;
+    const res = await fetch(url);
+    const data = await res.json();
+    if (data.results && data.results.length > 0) {
+      return data.results[0].artworkUrl100.replace("100x100bb.jpg", "600x600bb.jpg");
+    }
+  } catch (err) {
+    console.warn("Erro no iTunes API:", err);
+  }
+  return "";
+}
+
 /* PLAY/PAUSE */
 playBtn.onclick = async () => {
   try {
@@ -220,10 +236,7 @@ playBtn.onclick = async () => {
 /* VOLUME */
 volume.oninput = () => { audio.volume = volume.value; };
 
-/* ATUALIZA MÚSICA E CAPA */
-function atualizarQuadroMusica(texto) {
-  document.getElementById("current-music").textContent = texto;
-}
+/* ATUALIZA CAPA */
 function atualizarCapa(url, artista) {
   const img = document.getElementById("cover");
   const fallback = `https://ui-avatars.com/api/?name=${encodeURIComponent(artista)}&background=0f0f0f&color=00ffcc&size=206`;
@@ -234,31 +247,39 @@ function atualizarCapa(url, artista) {
   teste.src = url + "?t=" + Date.now();
 }
 
-/* API */
+/* ATUALIZAÇÃO DO PLAYER */
 async function atualizar() {
   try {
     const res = await fetch("https://vox.svrdedicado.org/api/g1.BGHPCaFIIwKZX_z9dZSiZKYCoM41zevN6iEQD1qI99s?nocache=" + Date.now());
     const text = await res.text();
-    if (!text.includes("<")) throw new Error("Resposta inválida");
     const xml = new DOMParser().parseFromString(text, "text/xml");
 
-    let musica = xml.querySelector("musica_atual")?.textContent || "Ao vivo";
-    let capa = xml.querySelector("capa_musica")?.textContent || "";
+    let musicaRaw = xml.querySelector("musica_atual")?.textContent || "Ao vivo";
     let artista = "Desconhecido";
+    let musica = musicaRaw;
 
-    if (musica.includes("-")) {
-      const partes = musica.split("-");
+    if (musicaRaw.includes("-")) {
+      const partes = musicaRaw.split("-");
       artista = partes[0].trim();
       musica = partes.slice(1).join("-").trim();
     }
     if (artista.length > 20) artista = artista.slice(0,20) + "...";
 
     document.getElementById("artist").textContent = "🎤 " + artista;
-    atualizarQuadroMusica(musica);
+    document.getElementById("current-music").textContent = musica;
+
+    let rawCapa = xml.querySelector("capa_musica")?.textContent || "";
+    let capa = rawCapa;
+
+    if (!capa || capa.length < 10) {
+      const itunesCapa = await buscarCapaItunes(artista, musica);
+      if (itunesCapa) capa = itunesCapa;
+    }
+
     atualizarCapa(capa, artista);
 
-  } catch {
-    atualizarQuadroMusica("Erro na conexão");
+  } catch (e) {
+    document.getElementById("current-music").textContent = "Erro na conexão";
   }
 }
 
