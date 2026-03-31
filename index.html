@@ -116,6 +116,7 @@ body {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: opacity 0.3s ease;
 }
 
 /* 🎵 NOTAS */
@@ -130,7 +131,6 @@ body {
   color: #00ffcc;
   animation: floatNote 3s linear;
 }
-
 @keyframes floatNote {
   0% { transform: translateY(0); opacity: 0; }
   20% { opacity: 1; }
@@ -155,11 +155,9 @@ body {
   transform: scale(1.2) rotate(10deg);
 }
 
-/* PULSO */
 .player.playing #playBtn {
   animation: pulse 1s infinite alternate;
 }
-
 @keyframes pulse {
   from { transform: scale(1); }
   to { transform: scale(1.15); }
@@ -197,7 +195,6 @@ body {
   <source src="https://i.imgur.com/z23V8dZ.mp4">
 </video>
 
-<!-- INFO -->
 <div class="info-container">
   <div class="info-background"></div>
   <div class="info">
@@ -209,11 +206,9 @@ body {
   </div>
 </div>
 
-<!-- DIREITA -->
 <div class="right">
   <div class="cover">
     <img id="cover" src="https://via.placeholder.com/206x164">
-
     <div class="notes" id="notes"></div>
   </div>
 
@@ -270,16 +265,59 @@ setInterval(()=>{
   if(!audio.paused) criarNota();
 },500);
 
-/* 🔄 ATUALIZA MÚSICA */
-async function atualizar() {
+/* 🍎 BUSCAR CAPA ITUNES */
+async function buscarCapaItunes(artista, musica) {
   try {
+    const termo = encodeURIComponent(`${artista} ${musica}`);
+    const url = `https://itunes.apple.com/search?term=${termo}&entity=song&limit=1`;
+
+    const res = await fetch(url);
+    const data = await res.json();
+
+    if (data.results && data.results.length > 0) {
+      return data.results[0].artworkUrl100.replace("100x100bb.jpg","600x600bb.jpg");
+    }
+  } catch(e){
+    console.log("Erro iTunes:", e);
+  }
+  return null;
+}
+
+/* 🖼️ ATUALIZAR CAPA */
+function atualizarCapa(url, artista){
+  const img = document.getElementById("cover");
+
+  const fallback = `https://ui-avatars.com/api/?name=${encodeURIComponent(artista)}&background=0f0f0f&color=00ffcc`;
+
+  if(!url){
+    img.src = fallback;
+    return;
+  }
+
+  const test = new Image();
+  test.onload = ()=>{
+    img.style.opacity=0;
+    setTimeout(()=>{
+      img.src=url;
+      img.style.opacity=1;
+    },200);
+  };
+  test.onerror = ()=> img.src=fallback;
+
+  test.src = url + "?t=" + Date.now();
+}
+
+/* 🔄 ATUALIZAR PLAYER */
+async function atualizar(){
+  try{
     const res = await fetch("https://vox.svrdedicado.org/api/g1.BGHPCaFIIwKZX_z9dZSiZKYCoM41zevN6iEQD1qI99s?nocache="+Date.now());
     const text = await res.text();
     const xml = new DOMParser().parseFromString(text,"text/xml");
 
     let musicaRaw = xml.querySelector("musica_atual")?.textContent || "Ao vivo";
-    let artista = "Desconhecido";
-    let musica = musicaRaw;
+
+    let artista="Desconhecido";
+    let musica=musicaRaw;
 
     if(musicaRaw.includes("-")){
       let partes = musicaRaw.split("-");
@@ -290,7 +328,18 @@ async function atualizar() {
     document.getElementById("artist").textContent="🎤 "+artista;
     document.getElementById("current-music").innerHTML=`<span>${musica}</span>`;
 
-  } catch {
+    let capaRadio = xml.querySelector("capa_musica")?.textContent || "";
+    let capaFinal = null;
+
+    if(capaRadio && capaRadio.length>10){
+      capaFinal = capaRadio;
+    } else {
+      capaFinal = await buscarCapaItunes(artista,musica);
+    }
+
+    atualizarCapa(capaFinal,artista);
+
+  }catch{
     document.getElementById("current-music").innerHTML="<span>Erro na conexão</span>";
   }
 }
