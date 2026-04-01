@@ -25,14 +25,14 @@
         }
 
         .player-container {
-            background: rgba(0, 0, 0, 0.7);
+            background: rgba(0, 0, 0, 0.6);
             border: 2px solid white;
             border-radius: 2em;
             box-shadow: 0 0 20px rgba(192, 192, 192, 0.4);
             padding: 40px;
             width: 400px;
             text-align: center;
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(5px);
             position: relative;
             z-index: 10;
             transition: all 0.5s ease;
@@ -43,12 +43,12 @@
             pointer-events: none;
         }
 
-        /* EFEITO VINIL */
+        /* EFEITO VINIL / LOGO ORIGINAL */
         .radio-logo {
-            width: 150px;
-            height: 150px;
+            width: 130px;
+            height: 130px;
             margin: 20px auto;
-            border: 5px solid #C0C0C0;
+            border: 4px solid #C0C0C0;
             border-radius: 50%;
             position: relative;
             background: url('https://xatimg.com/image/Q5xotmj4LryX.png') center/cover;
@@ -64,6 +64,7 @@
             to { transform: rotate(360deg); }
         }
 
+        /* CONTROLES SOBRE O DISCO */
         .player-controls {
             position: absolute;
             top: 50%;
@@ -83,59 +84,58 @@
         .play-button {
             background: rgba(255, 255, 255, 0.9);
             border: none;
-            width: 50px;
-            height: 50px;
+            width: 45px;
+            height: 45px;
             border-radius: 50%;
             cursor: pointer;
-            font-size: 22px;
+            font-size: 20px;
             color: #333;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: 0.3s;
         }
 
-        /* CAPA DO ÁLBUM (APPLE API) */
+        /* CAPA DO ÁLBUM (APPLE) - Posicionada como no anterior */
         #sonic_art {
             position: absolute;
             top: 15px;
             right: 15px;
-            width: 90px;
-            height: 90px;
-            border-radius: 12px;
+            width: 80px;
+            height: 80px;
+            border-radius: 10px;
             background-size: cover;
-            background-position: center;
-            border: 2px solid #fff;
+            border: 1px solid #fff;
             background-color: #222;
-            transition: background-image 0.8s ease-in-out;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            transition: background-image 0.5s;
         }
 
-        /* INFORMAÇÕES */
+        /* INFOS WIDGET */
         .listeners-container, .dj-wrapper {
             position: absolute;
             left: 15px;
-            background: rgba(0,0,0,0.6);
-            padding: 6px 12px;
-            border-radius: 20px;
+            background: rgba(0,0,0,0.5);
+            padding: 5px 12px;
+            border-radius: 15px;
             color: #fff;
-            font-size: 13px;
+            font-size: 12px;
         }
         .listeners-container { top: 15px; }
-        .dj-wrapper { top: 55px; }
+        .dj-wrapper { top: 50px; }
 
         .neon-letter {
             font-family: 'Orbitron', sans-serif;
-            font-size: 2rem;
+            font-size: 2.2rem;
             color: #fff;
             text-shadow: 0 0 10px #fff, 0 0 20px #C0C0C0;
-            margin: 15px 0;
+            display: inline-block;
+            margin: 10px 0;
         }
 
+        /* AREA DA MÚSICA */
         .now-playing {
             background: rgba(255,255,255,0.1);
-            padding: 12px;
-            border-radius: 10px;
+            padding: 10px;
+            border-radius: 8px;
             margin: 15px 0;
             overflow: hidden;
             white-space: nowrap;
@@ -145,8 +145,7 @@
             display: inline-block;
             color: #fff;
             font-weight: bold;
-            min-width: 100%;
-            animation: marquee 12s linear infinite;
+            animation: marquee 10s linear infinite;
         }
 
         @keyframes marquee {
@@ -160,13 +159,13 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 12px;
-            color: white;
+            gap: 10px;
+            color: #fff;
         }
 
         .volume-slider {
             cursor: pointer;
-            width: 140px;
+            width: 150px;
             accent-color: #C0C0C0;
         }
 
@@ -177,7 +176,7 @@
             left: 50%;
             transform: translate(-50%, -50%);
             width: 350px;
-            background: #111;
+            background: #222;
             border: 2px solid #C0C0C0;
             border-radius: 15px;
             padding: 20px;
@@ -186,15 +185,15 @@
             color: #fff;
         }
         .history-container.active { display: block; }
-        .close-history { float: right; cursor: pointer; background: none; border: none; color: #fff; font-size: 24px; }
+        .close-history { float: right; cursor: pointer; background: none; border: none; color: #fff; font-size: 20px; }
 
-        .datetime-container { font-size: 13px; color: #aaa; margin-top: 15px; }
+        .datetime-container { font-size: 13px; color: #ccc; margin-top: 10px; }
     </style>
 </head>
 <body>
 
     <div class="player-container" id="mainPlayer">
-        <div class="listeners-container"><i class="fas fa-headphones"></i> <span id="sonic_listeners">0</span></div>
+        <div class="listeners-container"><i class="fas fa-headphones"></i> <span id="sonic_listeners">--</span></div>
         <div class="dj-wrapper"><i class="fas fa-headset"></i> <span id="sonic_dj">AutoDj</span></div>
         
         <div id="sonic_art"></div>
@@ -206,11 +205,11 @@
         </div>
 
         <div class="player-title">
-            <div class="neon-letter">RADIO LUNA</div>
+            <span class="neon-letter">RADIO LUNA</span>
         </div>
 
         <div class="now-playing">
-            <div id="sonic_title">A carregar música...</div>
+            <div id="sonic_title">Carregando informações...</div>
         </div>
 
         <div class="volume-control">
@@ -223,16 +222,15 @@
             <span id="current-time">00:00:00</span> | <span id="current-date">01/01/2025</span>
         </div>
 
-        <button id="historyButton" style="margin-top:15px; cursor:pointer; background:#333; color:#fff; border:1px solid #555; padding:8px 20px; border-radius:20px;">
-            <i class="fas fa-history"></i> Ver Histórico
+        <button id="historyButton" style="margin-top:15px; cursor:pointer; background:#444; color:#fff; border:none; padding:5px 15px; border-radius:10px;">
+            <i class="fas fa-history"></i> Historial
         </button>
     </div>
 
     <div id="historyContainer" class="history-container">
         <button id="closeHistory" class="close-history">&times;</button>
-        <h3><i class="fas fa-music"></i> Últimas Músicas</h3>
-        <hr>
-        <div id="sonic_history">A procurar histórico...</div>
+        <h3>Historial</h3>
+        <div id="sonic_history">Buscando...</div>
     </div>
 
     <script>
@@ -245,41 +243,33 @@
             const playerCont = document.getElementById('mainPlayer');
             const titleElement = document.getElementById('sonic_title');
 
-            // 1. FUNÇÃO BUSCAR CAPA NA APPLE
-            async function fetchAppleArtwork(trackName) {
-                if (!trackName || trackName.includes("carregar") || trackName.length < 3) return;
-                
+            // Função de busca da Capa na Apple
+            async function getAppleArt(song) {
+                if(!song || song.includes("Carregando")) return;
                 try {
-                    const response = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(trackName)}&media=music&limit=1`);
-                    const data = await response.json();
-                    
-                    if (data.results && data.results.length > 0) {
-                        const imgUrl = data.results[0].artworkUrl100.replace('100x100bb', '400x400bb');
-                        document.getElementById('sonic_art').style.backgroundImage = `url('${imgUrl}')`;
+                    const res = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(song)}&media=music&limit=1`);
+                    const data = await res.json();
+                    if(data.results.length > 0) {
+                        const img = data.results[0].artworkUrl100.replace('100x100bb', '300x300bb');
+                        document.getElementById('sonic_art').style.backgroundImage = `url('${img}')`;
                     }
-                } catch (err) {
-                    console.log("Erro API Apple:", err);
-                }
+                } catch(e) {}
             }
 
-            // 2. MONITOR DE MUDANÇA DE MÚSICA (OBSERVER)
+            // Monitorar mudança de música para atualizar capa e garantir nome visível
             const observer = new MutationObserver(() => {
-                const song = titleElement.innerText;
-                fetchAppleArtwork(song);
-                
-                // Correção de DJ Vazio
-                const dj = document.getElementById('sonic_dj');
-                if(dj.innerText.trim() === "" || dj.innerText.includes("--")) {
-                    dj.innerText = "AutoDj";
+                const currentTrack = titleElement.innerText.trim();
+                if(currentTrack !== "" && !currentTrack.includes("Carregando")) {
+                    getAppleArt(currentTrack);
                 }
             });
             observer.observe(titleElement, { childList: true, subtree: true });
 
-            // 3. CONTROLOS DO PLAYER
+            // Play/Pause
             playBtn.addEventListener('click', () => {
                 if (!isPlaying) {
                     audio.play();
-                    playBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                    playBtn.innerHTML = "⏸";
                     playerCont.classList.add('playing');
                 } else {
                     audio.pause();
@@ -296,27 +286,20 @@
                 document.getElementById('volumePercentage').innerText = Math.round(e.target.value * 100) + "%";
             });
 
-            // Data/Hora
+            // Data e Hora
             setInterval(() => {
                 const now = new Date();
                 document.getElementById('current-time').innerText = now.toLocaleTimeString();
                 document.getElementById('current-date').innerText = now.toLocaleDateString();
             }, 1000);
 
-            // 4. MODAL HISTÓRICO
+            // Histórico
             const hBtn = document.getElementById('historyButton');
             const hCont = document.getElementById('historyContainer');
             const hClose = document.getElementById('closeHistory');
 
-            hBtn.addEventListener('click', () => {
-                hCont.classList.add('active');
-                playerCont.classList.add('blur-background');
-            });
-
-            hClose.addEventListener('click', () => {
-                hCont.classList.remove('active');
-                playerCont.classList.remove('blur-background');
-            });
+            hBtn.addEventListener('click', () => { hCont.classList.add('active'); playerCont.classList.add('blur-background'); });
+            hClose.addEventListener('click', () => { hCont.classList.remove('active'); playerCont.classList.remove('blur-background'); });
         });
     </script>
 </body>
