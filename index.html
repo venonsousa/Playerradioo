@@ -1,9 +1,197 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rádio INSANO</title>
+
+<style>
+body {
+  margin: 0;
+  background: #0f0f0f;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  font-family: Arial, sans-serif;
+}
+
+.player {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  border-radius: 16px;
+  width: 551px;
+  height: 276px;
+  overflow: hidden;
+  color: white;
+}
+
+.player video {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -2;
+}
+
+.info-container {
+  position: relative;
+  width: 280px;
+  height: 140px;
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  z-index: 2;
+}
+
+.info-background {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  background: linear-gradient(45deg,#00ffcc,#ff00ff);
+  opacity: 0.15;
+}
+
+.info {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+.radio-name { color:#00ffcc; font-weight:bold; }
+.station { color:#aaa; }
+.artist { color:#fff; }
+
+#current-music {
+  width: 100%;
+  overflow: hidden;
+}
+
+#current-music span {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.marquee {
+  animation: marquee 10s linear infinite;
+}
+
+@keyframes marquee {
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
+}
+
+#volume { width: 100%; }
+
+.right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  z-index: 2;
+}
+
+.cover {
+  position: relative;
+  width: 206px;
+  height: 164px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #1a1a1a;
+}
+
+.cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: opacity 0.3s ease;
+}
+
+.notes {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+}
+
+.note {
+  position: absolute;
+  font-size: 18px;
+  color: #00ffcc;
+  animation: floatNote 3s linear;
+}
+
+@keyframes floatNote {
+  0% { transform: translateY(0); opacity: 0; }
+  20% { opacity: 1; }
+  100% { transform: translateY(-120px); opacity: 0; }
+}
+
+#playBtn {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  border: none;
+  background: linear-gradient(135deg,#00ffcc,#ff00ff);
+  color: #0f0f0f;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.player.playing #playBtn {
+  animation: pulse 1s infinite alternate;
+}
+
+@keyframes pulse {
+  from { transform: scale(1); }
+  to { transform: scale(1.15); }
+}
+</style>
+</head>
+
+<body>
+
+<div class="player" id="player">
+
+<video autoplay muted loop playsinline>
+  <source src="https://i.imgur.com/z23V8dZ.mp4" type="video/mp4">
+</video>
+
+<div class="info-container">
+  <div class="info-background"></div>
+  <div class="info">
+    <div class="radio-name">RÁDIO INSANO</div>
+    <div class="station">Sabor Energético</div>
+    <div class="artist" id="artist">🎤 Carregando...</div>
+    <div id="current-music"><span>Carregando música...</span></div>
+    <input type="range" id="volume" min="0" max="1" step="0.01" value="1">
+  </div>
+</div>
+
+<div class="right">
+  <div class="cover">
+    <img id="cover" src="https://via.placeholder.com/206x164">
+    <div class="notes" id="notes"></div>
+  </div>
+
+  <button id="playBtn">▶️</button>
+</div>
+
 <audio id="audio"></audio>
+
+</div>
 
 <script>
 const audio = document.getElementById("audio");
+const playBtn = document.getElementById("playBtn");
+const player = document.getElementById("player");
 
-/* 🎧 LISTA DE STREAMS (principal + backup) */
+/* STREAMS */
 const streams = [
   "http://stm.igng.com.br:7018/stream",
   "http://stm.igng.com.br:7018/;",
@@ -12,28 +200,21 @@ const streams = [
 
 let currentStream = 0;
 
-/* ▶️ PLAY COM AUTO TROCA */
 async function playStream(){
   try {
     audio.src = streams[currentStream];
     await audio.play();
-    console.log("Tocando:", streams[currentStream]);
   } catch {
     trocarStream();
   }
 }
 
-/* 🔄 TROCAR STREAM AUTOMÁTICO */
 function trocarStream(){
   currentStream++;
-  if(currentStream >= streams.length){
-    currentStream = 0;
-  }
-  console.log("Tentando outro stream...");
+  if(currentStream >= streams.length) currentStream = 0;
   playStream();
 }
 
-/* BOTÃO PLAY */
 playBtn.onclick = async () => {
   if(audio.paused){
     await playStream();
@@ -46,8 +227,97 @@ playBtn.onclick = async () => {
   }
 };
 
-/* 🚨 SE CAIR, TROCA AUTOMATICAMENTE */
 audio.onerror = trocarStream;
 audio.onstalled = trocarStream;
-audio.onabort = trocarStream;
+
+/* VOLUME */
+volume.oninput = e => audio.volume = e.target.value;
+
+/* NOTAS */
+const notes = document.getElementById("notes");
+
+function criarNota(){
+  if(notes.children.length > 10) return;
+  const n=document.createElement("div");
+  n.className="note";
+  n.textContent=["🎵","🎶","♪"][Math.floor(Math.random()*3)];
+  n.style.left=Math.random()*40+"px";
+  notes.appendChild(n);
+  setTimeout(()=>n.remove(),3000);
+}
+
+setInterval(()=>{ if(!audio.paused) criarNota(); },500);
+
+/* CAPA */
+function atualizarCapa(url, artista){
+  const img = document.getElementById("cover");
+  const fallback = `https://ui-avatars.com/api/?name=${encodeURIComponent(artista)}`;
+  const nova = new Image();
+
+  nova.onload = ()=>{
+    img.style.opacity=0;
+    setTimeout(()=>{
+      img.src=url;
+      img.style.opacity=1;
+    },200);
+  };
+  nova.onerror = ()=> img.src=fallback;
+  nova.src = url || fallback;
+}
+
+/* TEXTO */
+function atualizarTexto(texto){
+  const el = document.getElementById("current-music");
+  el.innerHTML = `<span>${texto}</span>`;
+  const span = el.querySelector("span");
+  if(span.scrollWidth > el.clientWidth){
+    span.classList.add("marquee");
+  }
+}
+
+/* API RADIO */
+let carregando=false;
+
+async function atualizar(){
+  if(carregando) return;
+  carregando=true;
+
+  try{
+    const res = await fetch("https://vox.svrdedicado.org/api/g1.BGHPCaFIIwKZX_z9dZSiZKYCoM41zevN6iEQD1qI99s?nocache="+Date.now());
+    const text = await res.text();
+    const xml = new DOMParser().parseFromString(text,"text/xml");
+
+    let musicaRaw = xml.querySelector("musica_atual")?.textContent || "Ao vivo";
+
+    let artista="Desconhecido";
+    let musica=musicaRaw;
+
+    if(musicaRaw.includes("-")){
+      let partes = musicaRaw.split("-");
+      artista = partes[0].trim();
+      musica = partes.slice(1).join("-").trim();
+    }
+
+    document.getElementById("artist").textContent="🎤 "+artista;
+    atualizarTexto(musica);
+    atualizarCapa("",artista);
+
+  }catch{
+    atualizarTexto("Erro na conexão");
+  }
+
+  carregando=false;
+}
+
+setInterval(atualizar,10000);
+atualizar();
+
+/* PROTEÇÃO */
+document.addEventListener("contextmenu", e => e.preventDefault());
+document.onkeydown = e => {
+  if(e.key === "F12") return false;
+};
 </script>
+
+</body>
+</html>
