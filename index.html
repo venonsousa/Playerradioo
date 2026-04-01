@@ -75,7 +75,7 @@ body {
 .radio-name { color:#00ffcc; font-weight:bold; }
 .station { color:#aaa; }
 
-/* ARTISTA COM MARQUEE */
+/* ARTISTA */
 .artist {
   color: #fff;
   width: 100%;
@@ -215,7 +215,7 @@ body {
   <button id="playBtn">▶️</button>
 </div>
 
-<audio id="audio"></audio>
+<audio id="audio" autoplay muted></audio>
 
 </div>
 
@@ -262,6 +262,27 @@ playBtn.onclick = async ()=>{
 
 audio.onerror = trocarStream;
 
+/* AUTOPLAY */
+window.addEventListener("load", async () => {
+  try {
+    audio.muted = true;
+    await playStream();
+
+    setTimeout(() => {
+      audio.muted = false;
+    }, 2000);
+
+    playBtn.textContent="⏸️";
+    player.classList.add("playing");
+
+  } catch {}
+});
+
+/* CLIQUE ATIVA SOM */
+document.addEventListener("click", () => {
+  audio.muted = false;
+}, { once: true });
+
 /* VOLUME */
 volume.oninput = e => audio.volume = e.target.value;
 
@@ -280,7 +301,7 @@ function criarNota(){
 
 setInterval(()=>{ if(!audio.paused) criarNota(); },500);
 
-/* 🍎 CAPA */
+/* APPLE MUSIC */
 async function buscarCapa(artista,musica){
   try{
     const termo=encodeURIComponent(`${artista} ${musica}`);
@@ -314,13 +335,12 @@ function atualizarTexto(texto){
   const el=document.getElementById("current-music");
   el.innerHTML=`<span>${texto}</span>`;
   const span=el.querySelector("span");
-
   if(span.scrollWidth>el.clientWidth){
     span.classList.add("marquee");
   }
 }
 
-/* 🎤 ARTISTA COM MARQUEE */
+/* ARTISTA */
 function atualizarArtista(nome){
   const el = document.getElementById("artist");
   el.innerHTML = `<span>🎤 ${nome}</span>`;
