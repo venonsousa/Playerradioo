@@ -1,30 +1,18 @@
-
 <!DOCTYPE html>
-<html lang="es">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SELKIT REPRO XAT</title>
     
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        /* Embed Reset */
-        *, *::before, *::after {
-            box-sizing: border-box;
-        }
-
-        body, html {
-            margin: 0;
-            padding: 0;
-            background: transparent;
-        }
-
-        /* Variables */
+        /* Manter seu CSS original aqui */
+        *, *::before, *::after { box-sizing: border-box; }
+        body, html { margin: 0; padding: 0; background: transparent; }
         :root {
             --pastel-pink: #ff8acb;
             --soft-lilac: #caa6ff;
@@ -33,7 +21,6 @@
             --glass-border: rgba(255, 138, 203, 0.4);
         }
 
-        /* STRICT SIZE CONTAINER */
         .radio-widget {
             position: relative;
             width: 637px;
@@ -48,506 +35,83 @@
             display: block;
         }
 
-        /* Video Background - NO BLUR */
         .bg-video {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            z-index: 1;
+            top: 0; left: 0; width: 100%; height: 100%;
+            object-fit: cover; z-index: 1;
         }
 
-        /* Light Dark Overlay for Contrast */
         .video-overlay {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.3);
-            z-index: 2;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.3); z-index: 2;
         }
 
-        /* Reusable UI Elements */
         .glass-panel {
             background: var(--glass-bg);
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(8px);
             border: 1px solid var(--glass-border);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
 
-        button {
-            cursor: pointer;
-            outline: none;
-            border: none;
-            font-family: 'Poppins', sans-serif;
-            transition: all 0.3s ease;
-        }
+        /* Layout */
+        .top-left-panel { position: absolute; top: 15px; left: 15px; z-index: 10; padding: 5px 15px; border-radius: 8px; text-align: center; }
+        .time-text { color: #fff; font-size: 22px; font-weight: 700; }
+        .date-text { color: var(--pastel-pink); font-size: 10px; text-transform: uppercase; }
 
-        /* Top Left Panel (Clock) */
-        .top-left-panel {
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            z-index: 10;
-            padding: 5px 15px;
-            border-radius: 8px;
-            text-align: center;
-        }
-
-        .date-text {
-            color: var(--pastel-pink);
-            font-size: 10px;
-            font-weight: 600;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-
-        .time-text {
-            color: #fff;
-            font-size: 22px;
-            font-weight: 700;
-            line-height: 1.1;
-            text-shadow: 0 2px 5px rgba(0,0,0,0.5);
-        }
-
-        /* Top Right Panel (Icons) */
-        .top-right-panel {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            z-index: 10;
-            display: flex;
-            gap: 10px;
-        }
-
-        .top-btn {
-            width: 38px;
-            height: 38px;
-            border-radius: 10px;
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            color: var(--light-lavender);
-            font-size: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .top-btn:hover {
-            color: #fff;
-            border-color: var(--pastel-pink);
-            box-shadow: 0 0 10px rgba(255, 138, 203, 0.3);
-        }
-
-        #warning-btn {
-            color: var(--pastel-pink);
-        }
-
-        #warning-btn:hover {
-            text-shadow: 0 0 10px var(--pastel-pink);
-            transform: scale(1.05);
-        }
-
-        /* Bottom Control Bar */
         .bottom-bar {
-            position: absolute;
-            bottom: 12px;
-            left: 12px;
-            right: 12px;
-            height: 80px;
-            border-radius: 20px;
-            z-index: 10;
-            display: flex;
-            align-items: center;
-            padding: 0 15px;
-            gap: 15px;
+            position: absolute; bottom: 12px; left: 12px; right: 12px;
+            height: 80px; border-radius: 20px; z-index: 10;
+            display: flex; align-items: center; padding: 0 15px; gap: 15px;
         }
 
-        /* Left Side: Play & Album */
-        .bar-left {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
+        .bar-left { display: flex; align-items: center; gap: 15px; }
         .main-play-btn {
-            width: 55px;
-            height: 55px;
-            border-radius: 50%;
-            background: rgba(0, 0, 0, 0.8);
-            border: 2px solid var(--pastel-pink);
-            color: #fff;
-            font-size: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 0 15px rgba(255, 138, 203, 0.4);
-            padding-left: 4px; /* optical centering */
-            flex-shrink: 0;
+            width: 55px; height: 55px; border-radius: 50%;
+            background: rgba(0, 0, 0, 0.8); border: 2px solid var(--pastel-pink);
+            color: #fff; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: 0.3s;
         }
 
-        .main-play-btn.playing {
-            padding-left: 0;
-            color: var(--soft-lilac);
-            border-color: var(--soft-lilac);
-            box-shadow: 0 0 15px rgba(202, 166, 255, 0.4);
-        }
+        /* Capa do Álbum Fix */
+        .album-wrapper { position: relative; width: 55px; height: 55px; flex-shrink: 0; }
+        #sonic_art img { width: 55px !important; height: 55px !important; border-radius: 8px; object-fit: cover; border: 1px solid var(--glass-border); }
 
-        .main-play-btn:hover {
-            transform: scale(1.05);
-            background: rgba(255, 138, 203, 0.1);
-        }
-
-        .album-wrapper {
-            position: relative;
-            width: 55px;
-            height: 55px;
-            flex-shrink: 0;
-        }
-
-        #sonic_art {
-            width: 100%;
-            height: 100%;
-            border-radius: 10px;
-            overflow: hidden;
-            border: 1px solid var(--glass-border);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
-            background: rgba(255,255,255,0.1); /* fallback */
-        }
-
-        #sonic_art img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .al-aire-badge {
-            position: absolute;
-            top: -8px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--pastel-pink);
-            color: #000;
-            font-size: 9px;
-            font-weight: 700;
-            padding: 2px 6px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            white-space: nowrap;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
-            z-index: 2;
-        }
-
-        .al-aire-dot {
-            width: 5px;
-            height: 5px;
-            background: #fff;
-            border-radius: 50%;
-            animation: pulse-dot 1.5s infinite;
-        }
-
-        /* Center Area */
-        .bar-center {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            overflow: hidden;
-            gap: 6px;
-        }
-
-        .title-row {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        #sonic_title {
-            color: #fff;
-            font-size: 13px;
-            font-weight: 500;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            text-shadow: 0 1px 3px rgba(0,0,0,0.8);
-        }
+        .bar-center { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; overflow: hidden; color: white; }
+        #sonic_title { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--pastel-pink); }
+        
+        .info-badge { font-size: 10px; background: rgba(255,255,255,0.1); padding: 2px 8px; border-radius: 10px; display: flex; gap: 4px; }
+        
+        .vol-container { display: flex; align-items: center; gap: 8px; background: var(--glass-bg); padding: 5px 10px; border-radius: 10px; }
+        input[type="range"] { cursor: pointer; width: 60px; }
 
         /* Equalizer */
-        .equalizer {
-            display: flex;
-            align-items: flex-end;
-            gap: 2px;
-            height: 12px;
-            flex-shrink: 0;
-        }
+        .equalizer { display: flex; align-items: flex-end; gap: 2px; height: 12px; }
+        .eq-bar { width: 3px; background: var(--soft-lilac); height: 3px; transition: 0.2s; }
+        .equalizer.active .eq-bar { animation: eq-play 0.6s infinite alternate; }
+        @keyframes eq-play { 0% { height: 3px; } 100% { height: 12px; } }
 
-        .eq-bar {
-            width: 3px;
-            background: var(--soft-lilac);
-            border-radius: 2px;
-            height: 3px;
-            box-shadow: 0 0 5px var(--soft-lilac);
-            transition: height 0.2s ease;
+        /* Badge Al Aire */
+        .al-aire-badge {
+            position: absolute; top: -8px; left: 50%; transform: translateX(-50%);
+            background: var(--pastel-pink); color: #000; font-size: 9px;
+            font-weight: 800; padding: 2px 6px; border-radius: 10px; z-index: 5;
         }
-
-        .equalizer.active .eq-bar {
-            background: var(--pastel-pink);
-            box-shadow: 0 0 5px var(--pastel-pink);
-            animation: eq-play 1s infinite alternate ease-in-out;
-        }
-
-        .equalizer.active .eq-bar:nth-child(1) { animation-delay: 0.1s; animation-duration: 0.6s; }
-        .equalizer.active .eq-bar:nth-child(2) { animation-delay: 0.3s; animation-duration: 0.8s; }
-        .equalizer.active .eq-bar:nth-child(3) { animation-delay: 0.0s; animation-duration: 0.5s; }
-
-        @keyframes eq-play {
-            0% { height: 3px; }
-            100% { height: 12px; }
-        }
-
-        /* Badges Row */
-        .badges-row {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .info-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            background: rgba(255, 255, 255, 0.15);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: #fff;
-            font-size: 10px;
-            font-weight: 500;
-            padding: 3px 10px;
-            border-radius: 12px;
-            white-space: nowrap;
-        }
-
-        #sonic_listeners, #sonic_dj {
-            display: inline-block;
-        }
-
-        .pausa-btn {
-            background: transparent;
-            border: 1px solid var(--soft-lilac);
-            color: var(--soft-lilac);
-            font-size: 10px;
-            font-weight: 600;
-            padding: 3px 12px;
-            border-radius: 12px;
-            text-transform: uppercase;
-        }
-
-        .pausa-btn:hover {
-            background: rgba(202, 166, 255, 0.2);
-            color: #fff;
-        }
-
-        .pausa-btn.playing {
-            border-color: var(--pastel-pink);
-            color: var(--pastel-pink);
-        }
-
-        /* Additional Space Image Container */
-        .empty-space-image {
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0 10px;
-        }
-
-        /* Right Controls */
-        .bar-right {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-shrink: 0;
-        }
-
-        .action-btn {
-            width: 34px;
-            height: 34px;
-            border-radius: 8px;
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            color: var(--light-lavender);
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .action-btn:hover {
-            color: #fff;
-            border-color: var(--pastel-pink);
-            box-shadow: 0 0 8px rgba(255, 138, 203, 0.3);
-        }
-
-        .vol-container {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            border-radius: 8px;
-            padding-right: 8px;
-        }
-
-        .vol-container .action-btn {
-            border: none;
-            background: transparent;
-            box-shadow: none;
-        }
-
-        input[type="range"] {
-            -webkit-appearance: none;
-            width: 50px;
-            height: 4px;
-            background: rgba(255,255,255,0.2);
-            border-radius: 2px;
-            outline: none;
-        }
-
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: var(--pastel-pink);
-            cursor: pointer;
-            box-shadow: 0 0 5px var(--pastel-pink);
-        }
-
-        /* Modal Warning Popup */
-        .modal-overlay {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.7);
-            z-index: 100;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            visibility: hidden;
-            opacity: 0;
-            transition: opacity 0.3s ease, visibility 0.3s ease;
-            backdrop-filter: blur(4px);
-        }
-
-        .modal-overlay.show {
-            visibility: visible;
-            opacity: 1;
-        }
-
-        .modal-content {
-            background: rgba(20, 15, 30, 0.85);
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--pastel-pink);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.6), 0 0 20px rgba(255, 138, 203, 0.2);
-            padding: 30px 25px;
-            border-radius: 16px;
-            text-align: center;
-            width: 85%;
-            transform: scale(0.9);
-            transition: transform 0.3s ease;
-        }
-
-        .modal-overlay.show .modal-content {
-            transform: scale(1);
-        }
-
-        .modal-content p {
-            color: #fff;
-            font-size: 14px;
-            font-weight: 500;
-            margin-bottom: 20px;
-            letter-spacing: 0.5px;
-        }
-
-        .close-btn {
-            background: rgba(255, 138, 203, 0.15);
-            border: 1px solid var(--pastel-pink);
-            color: var(--pastel-pink);
-            padding: 6px 20px;
-            border-radius: 15px;
-            font-size: 13px;
-            font-weight: 600;
-        }
-
-        .close-btn:hover {
-            background: var(--pastel-pink);
-            color: #000;
-        }
-
-        /* Animations */
-        @keyframes pulse-dot {
-            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.8); }
-            70% { transform: scale(1); box-shadow: 0 0 0 4px rgba(255, 255, 255, 0); }
-            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
-        }
-        .fa-spinner {
-            animation: spin 1s linear infinite;
-            padding-left: 0 !important;
-        }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
-
-        /* Particle System CSS */
-        .music-particle {
-            position: absolute;
-            pointer-events: none;
-            font-size: 14px;
-            z-index: 5;
-            animation: floatUp 1.5s ease-out forwards;
-        }
-        @keyframes floatUp {
-            0% { transform: translateY(0) scale(1); opacity: 1; }
-            100% { transform: translateY(-40px) scale(1.5); opacity: 0; }
-        }
-
     </style>
 </head>
 <body>
 
-    <!-- Container STRICT 637x363 -->
-    <div class="radio-widget" id="radio-widget">
-        
-        <!-- Background Video (NO BLUR) -->
+    <div class="radio-widget">
         <video class="bg-video" autoplay loop muted playsinline>
             <source src="https://i.imgur.com/Z78pSNa.mp4" type="video/mp4">
         </video>
         <div class="video-overlay"></div>
 
-        <!-- Warning Modal -->
-        <div class="modal-overlay" id="warning-modal">
-            <div class="modal-content">
-                <p>ESTE REPRODUCTOR ES EXCLUSIVO DE XAT.COM/SELKIT</p>
-                <button class="close-btn" id="close-modal">Cerrar</button>
-            </div>
-        </div>
-
-        <!-- Top Left: Clock -->
         <div class="top-left-panel glass-panel">
-            <div class="date-text" id="date-text">MIE 11/3</div>
+            <div class="date-text" id="date-text">--- --/--</div>
             <div class="time-text" id="time-text">00:00</div>
         </div>
 
-        <!-- Top Right: Icons -->
-        <div class="top-right-panel">
-            <button class="top-btn glass-panel" id="warning-btn" title="Advertencia">
-                <i class="fas fa-exclamation-triangle"></i>
-            </button>
-        </div>
-
-        <!-- Bottom Bar -->
         <div class="bottom-bar glass-panel">
             
             <div class="bar-left">
@@ -556,236 +120,73 @@
                 </button>
                 
                 <div class="album-wrapper">
-                    <div class="al-aire-badge">
-                        <div class="al-aire-dot"></div>AL AIRE
-                    </div>
-                    <!-- Sonic Art Widget -->
-                    <div id='sonic_art'></div>
-                </div>
+                    <div class="al-aire-badge">AO VIVO</div>
+                    <div id="sonic_art"></div> </div>
             </div>
 
             <div class="bar-center">
-                <div class="title-row">
-                    <!-- Sonic Title Widget -->
-                    <div id='sonic_title'></div>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div id="sonic_title">Carregando música...</div>
                     <div class="equalizer" id="equalizer">
-                        <div class="eq-bar"></div>
-                        <div class="eq-bar"></div>
-                        <div class="eq-bar"></div>
+                        <div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div>
                     </div>
                 </div>
-                <div class="badges-row">
-                    <div class="info-badge">DJ: <div id='sonic_dj'></div></div>
-                    <div class="info-badge">Oyentes: <div id='sonic_listeners'></div></div>
-                    <button class="pausa-btn" id="pausa-btn">PLAY</button>
+                <div style="display: flex; gap: 10px; margin-top: 4px;">
+                    <div class="info-badge">DJ: <span id="sonic_dj">Online</span></div>
+                    <div class="info-badge"><i class="fas fa-user"></i> <span id="sonic_listeners">0</span></div>
                 </div>
-            </div>
-
-            <!-- New Image in Empty Space -->
-            <div class="empty-space-image">
-                <img src="https://i.ibb.co/Txh2DbGQ/a-lapin-lbdj-onair-20.webp" alt="On Air" style="display: block;">
             </div>
 
             <div class="bar-right">
                 <div class="vol-container">
-                    <button class="action-btn" id="vol-icon-btn"><i class="fas fa-volume-up" id="vol-icon"></i></button>
+                    <i class="fas fa-volume-up" style="color: var(--pastel-pink); font-size: 12px;"></i>
                     <input type="range" id="vol-slider" min="0" max="1" step="0.01" value="0.75">
                 </div>
             </div>
-
         </div>
 
-        <!-- Invisible Audio Element -->
-        <audio id="audio-stream" src="	http://stm.igng.com.br:7018/stream" crossorigin="anonymous"></audio>
+        <audio id="audio-stream" src="http://stm.igng.com.br:7018/stream" crossorigin="anonymous"></audio>
     </div>
 
-    <!-- Sonic / Doscast Scripts -->
-    <script id='sonic_js' data-port='8004' src='https://fire.doscast.com/cp/widgets.js?r=976'></script>
+    <script id="sonic_js" data-port="8004" src="https://fire.doscast.com/cp/widgets.js?r=976"></script>
 
     <script>
-        // --- Elements ---
         const audio = document.getElementById('audio-stream');
-        const mainPlayBtn = document.getElementById('main-play-btn');
-        const mainPlayIcon = document.getElementById('main-play-icon');
-        const pausaBtn = document.getElementById('pausa-btn');
-        const equalizer = document.getElementById('equalizer');
+        const playBtn = document.getElementById('main-play-btn');
+        const playIcon = document.getElementById('main-play-icon');
+        const eq = document.getElementById('equalizer');
         const volSlider = document.getElementById('vol-slider');
-        const volIcon = document.getElementById('vol-icon');
-        const radioWidget = document.getElementById('radio-widget');
-        
-        // Modal Elements
-        const warningBtn = document.getElementById('warning-btn');
-        const warningModal = document.getElementById('warning-modal');
-        const closeModal = document.getElementById('close-modal');
 
-        let isPlaying = false;
-        let isLoading = false;
-        let reconnectTimeout;
+        // Play/Pause
+        playBtn.addEventListener('click', () => {
+            if (audio.paused) {
+                audio.play();
+                playIcon.className = 'fas fa-pause';
+                eq.classList.add('active');
+            } else {
+                audio.pause();
+                playIcon.className = 'fas fa-play';
+                eq.classList.remove('active');
+            }
+        });
 
-        // --- Clock & Date (Spanish) ---
+        // Volume
+        volSlider.addEventListener('input', (e) => {
+            audio.volume = e.target.value;
+        });
+
+        // Relógio
         function updateClock() {
             const now = new Date();
-            
-            // Time
-            const hours = String(now.getHours()).padStart(2, '0');
-            const minutes = String(now.getMinutes()).padStart(2, '0');
-            document.getElementById('time-text').textContent = `${hours}:${minutes}`;
-
-            // Date Format: MIE 11/3
-            const days = ['DOM', 'LUN', 'MAR', 'MIÉ', 'JUE', 'VIE', 'SÁB'];
-            const dayName = days[now.getDay()];
-            const dayNum = now.getDate();
-            const monthNum = now.getMonth() + 1;
-            document.getElementById('date-text').textContent = `${dayName} ${dayNum}/${monthNum}`;
+            document.getElementById('time-text').textContent = now.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
+            const days = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'];
+            document.getElementById('date-text').textContent = `${days[now.getDay()]} ${now.getDate()}/${now.getMonth()+1}`;
         }
         setInterval(updateClock, 1000);
         updateClock();
 
-        // --- Modal ---
-        warningBtn.addEventListener('click', () => {
-            warningModal.classList.add('show');
-        });
-        closeModal.addEventListener('click', () => {
-            warningModal.classList.remove('show');
-        });
-        warningModal.addEventListener('click', (e) => {
-            if (e.target === warningModal) warningModal.classList.remove('show');
-        });
-
-        // --- Audio Logic ---
-        function togglePlay() {
-            if (audio.paused) {
-                setLoadingState(true);
-                audio.load(); // catch live edge
-                audio.play().catch(err => {
-                    console.error("Playback failed:", err);
-                    setLoadingState(false);
-                    setPlayingState(false);
-                });
-            } else {
-                audio.pause();
-                setPlayingState(false);
-            }
-        }
-
-        mainPlayBtn.addEventListener('click', togglePlay);
-        pausaBtn.addEventListener('click', togglePlay);
-
-        audio.addEventListener('playing', () => {
-            clearTimeout(reconnectTimeout);
-            setLoadingState(false);
-            setPlayingState(true);
-        });
-
-        audio.addEventListener('waiting', () => {
-            setLoadingState(true);
-        });
-
-        audio.addEventListener('pause', () => {
-            setPlayingState(false);
-        });
-
-        // Auto-reconnect
-        audio.addEventListener('error', () => {
-            setLoadingState(false);
-            setPlayingState(false);
-            clearTimeout(reconnectTimeout);
-            if (isPlaying || isLoading) {
-                reconnectTimeout = setTimeout(() => {
-                    setLoadingState(true);
-                    audio.load();
-                    audio.play().catch(() => setLoadingState(false));
-                }, 5000);
-            }
-        });
-
-        function setPlayingState(state) {
-            isPlaying = state;
-            if (isPlaying) {
-                mainPlayIcon.className = 'fas fa-pause';
-                mainPlayBtn.classList.add('playing');
-                equalizer.classList.add('active');
-                pausaBtn.textContent = "PAUSA";
-                pausaBtn.classList.add('playing');
-            } else {
-                mainPlayIcon.className = 'fas fa-play';
-                mainPlayBtn.classList.remove('playing');
-                equalizer.classList.remove('active');
-                pausaBtn.textContent = "PLAY";
-                pausaBtn.classList.remove('playing');
-            }
-        }
-
-        function setLoadingState(state) {
-            isLoading = state;
-            if (isLoading) {
-                mainPlayIcon.className = 'fas fa-spinner';
-                equalizer.classList.remove('active');
-            } else {
-                setPlayingState(isPlaying);
-            }
-        }
-
-        // --- Volume Logic ---
-        volSlider.addEventListener('input', (e) => {
-            const val = e.target.value;
-            audio.volume = val;
-            if (val == 0) {
-                volIcon.className = 'fas fa-volume-mute';
-            } else if (val < 0.5) {
-                volIcon.className = 'fas fa-volume-down';
-            } else {
-                volIcon.className = 'fas fa-volume-up';
-            }
-        });
-        audio.volume = volSlider.value;
-
-        // --- Music Particle Effect ---
-        const particleContainer = document.createElement('div');
-        particleContainer.style.position = 'absolute';
-        particleContainer.style.top = '0';
-        particleContainer.style.left = '0';
-        particleContainer.style.width = '100%';
-        particleContainer.style.height = '100%';
-        particleContainer.style.pointerEvents = 'none';
-        particleContainer.style.zIndex = '9';
-        particleContainer.style.overflow = 'hidden';
-        radioWidget.appendChild(particleContainer);
-
-        let lastParticleTime = 0;
-        radioWidget.addEventListener('mousemove', (e) => {
-            const now = Date.now();
-            if (now - lastParticleTime < 50) return; // Throttle particle generation
-            lastParticleTime = now;
-
-            const particle = document.createElement('span');
-            particle.className = 'music-particle';
-            const notes = ['♪', '♫', '♬', '♩'];
-            particle.textContent = notes[Math.floor(Math.random() * notes.length)];
-            
-            // Randomize color
-            const isPink = Math.random() > 0.5;
-            particle.style.color = isPink ? 'var(--pastel-pink)' : 'var(--soft-lilac)';
-            particle.style.textShadow = `0 0 8px ${isPink ? 'var(--pastel-pink)' : 'var(--soft-lilac)'}`;
-            
-            // Position based on widget
-            const rect = radioWidget.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            particle.style.left = `${x}px`;
-            particle.style.top = `${y}px`;
-            
-            particleContainer.appendChild(particle);
-            
-            // Cleanup particle
-            setTimeout(() => {
-                if (particle.parentNode) {
-                    particle.parentNode.removeChild(particle);
-                }
-            }, 1500);
-        });
-
+        // Fallback para Metadados (Caso o widget externo falhe)
+        // O Sonic Panel injeta automaticamente nos IDs 'sonic_title', 'sonic_art', etc.
     </script>
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"7cfebe8ad60d47299959edeae0ac1784","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>
