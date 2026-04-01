@@ -2,16 +2,17 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>PLAYER VAQUERITOS VIP</title>
+    <title>PLAYER VAQUERITOS VIP - OFICIAL</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@400;700&display=swap" rel="stylesheet">
     <style type="text/css">
-        body { margin: 0; padding: 0; background: transparent; font-family: 'Reem Kufi', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        /* Layout Base - Estilo Metálico/Dark */
+        body { margin: 0; padding: 0; background: transparent; font-family: 'Reem Kufi', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
         
         .player-container {
             background: #000; 
             position: relative;
-            box-shadow: 0px 0px 25px rgba(0,0,0,0.9);
+            box-shadow: 0px 0px 30px rgba(0,0,0,0.9);
             width: 600px;
             height: 400px;
             border-radius: 12px;
@@ -19,17 +20,16 @@
             border: 1px solid rgba(255,255,255,0.1);
         }
 
+        /* Efeito de Fundo Esfumaçado */
         .blur-bg {
-            width: 110%;
-            height: 110%;
+            width: 115%; height: 115%;
             background-size: cover;
             background-position: center;
             position: absolute;
-            top: -5%; left: -5%;
-            filter: blur(20px);
-            opacity: 0.5;
+            top: -7.5%; left: -7.5%;
+            filter: blur(25px) brightness(0.4);
             z-index: 1;
-            transition: background-image 1s ease-in-out;
+            transition: background-image 1.2s ease-in-out;
         }
 
         .content {
@@ -43,22 +43,25 @@
             color: #fff;
         }
 
+        /* Capa do Álbum com Borda Metálica */
         .album-art {
-            width: 160px;
-            height: 160px;
+            width: 170px;
+            height: 170px;
             background: url('http://igng.com.br/api/logo.png') no-repeat center;
             background-size: cover;
             border-radius: 10px;
-            box-shadow: 0px 8px 25px rgba(0,0,0,0.7);
-            border: 2px solid rgba(255,255,255,0.2);
+            box-shadow: 0px 10px 30px rgba(0,0,0,0.8);
+            border: 2px solid rgba(255,255,255,0.3);
+            transition: background-image 0.5s ease;
         }
 
+        /* Caixa de Informações e Marquee */
         .info-box {
-            width: 80%;
-            margin-top: 20px;
+            width: 85%;
+            margin-top: 25px;
             text-align: center;
-            background: rgba(0,0,0,0.4);
-            padding: 10px;
+            background: rgba(0,0,0,0.5);
+            padding: 12px 0;
             border-left: 4px solid #fff;
             border-right: 4px solid #fff;
             overflow: hidden;
@@ -67,10 +70,10 @@
         .scrolling-text {
             white-space: nowrap;
             display: inline-block;
-            font-size: 22px;
+            font-size: 20px;
             font-weight: bold;
             text-transform: uppercase;
-            animation: marquee 12s linear infinite;
+            animation: marquee 15s linear infinite;
         }
 
         @keyframes marquee {
@@ -78,35 +81,38 @@
             100% { transform: translateX(-100%); }
         }
 
+        /* Controles e Volume */
         .controls {
             margin-top: 20px;
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 25px;
         }
 
         .btn-play {
-            width: 55px;
-            height: 55px;
+            width: 60px;
+            height: 60px;
             cursor: pointer;
             background-size: contain !important;
             background-repeat: no-repeat !important;
-            transition: 0.3s;
+            transition: transform 0.2s;
         }
+        .btn-play:active { transform: scale(0.9); }
 
         .status-play { background: url('https://i.imgur.com/mqkdfJP.png'); }
         .status-stop { background: url('https://i.imgur.com/Ji5iela.png'); }
 
-        input[type=range] { width: 120px; cursor: pointer; }
+        input[type=range] { width: 130px; cursor: pointer; accent-color: #fff; }
 
         .listeners-count {
             position: absolute;
-            top: 15px;
-            right: 20px;
+            top: 20px;
+            right: 25px;
             font-size: 14px;
-            background: rgba(255,255,255,0.1);
-            padding: 4px 12px;
-            border-radius: 15px;
+            background: rgba(255,255,255,0.15);
+            padding: 5px 15px;
+            border-radius: 20px;
+            backdrop-filter: blur(5px);
         }
     </style>
 </head>
@@ -121,15 +127,15 @@
         <div class="album-art" id="capa-album"></div>
 
         <div class="info-box">
-            <div class="scrolling-text" id="status-radio">CONECTANDO...</div>
+            <div class="scrolling-text" id="status-radio">CONECTANDO TRANSMISSÃO...</div>
         </div>
 
         <div class="controls">
             <div class="btn-play status-play" id="play-trigger"></div>
-            <input type="range" id="vol-control" min="0" max="1" step="0.05" value="0.8">
+            <input type="range" id="vol-control" min="0" max="1" step="0.01" value="0.8">
         </div>
 
-        <img src="https://i.imgur.com/c3NtUFR.gif" style="margin-top: 15px; opacity: 0.6;" width="320">
+        <img src="https://i.imgur.com/c3NtUFR.gif" style="margin-top: 20px; opacity: 0.5;" width="350">
     </div>
 </div>
 
@@ -140,10 +146,10 @@
     const audio = document.getElementById('audio-engine');
     let ultimaMusica = "";
 
-    // FUNÇÃO PLAY/PAUSE
+    // 1. PLAY / PAUSE
     $('#play-trigger').click(function() {
         if (audio.paused) {
-            audio.play();
+            audio.play().catch(e => console.log("Erro ao dar play: ", e));
             $(this).removeClass('status-play').addClass('status-stop');
         } else {
             audio.pause();
@@ -151,24 +157,39 @@
         }
     });
 
-    // VOLUME
+    // 2. CONTROLE DE VOLUME
     $('#vol-control').on('input', function() {
         audio.volume = this.value;
     });
 
-    // BUSCA CAPA NA APPLE MUSIC
+    // 3. BUSCA INTELIGENTE APPLE MUSIC
     function buscarCapaApple(termo) {
-        if (termo === ultimaMusica || termo.includes("VAQUERITOS")) return;
-        ultimaMusica = termo;
+        // Limpeza de texto para Sertanejo e Funk (Remixes, Ao Vivo, etc)
+        let termoLimpo = termo.toUpperCase()
+            .replace(/CLIP/g, "").replace(/OFFICIAL/g, "").replace(/VIDEO/g, "")
+            .replace(/\(.*\)/g, "").replace(/\[.*\]/g, "")
+            .replace(/FT\./g, "").replace(/FEAT/g, "").replace(/LIVE/g, "")
+            .replace(/AO VIVO/g, "").replace(/-/g, " ").trim();
+
+        if (termoLimpo === ultimaMusica || termoLimpo.length < 4) return;
+        ultimaMusica = termoLimpo;
 
         $.ajax({
-            url: `https://itunes.apple.com/search?term=${encodeURIComponent(termo)}&media=music&limit=1`,
+            url: `https://itunes.apple.com/search?term=${encodeURIComponent(termoLimpo)}&media=music&limit=1`,
             dataType: 'jsonp',
             success: function(data) {
                 if (data.results.length > 0) {
-                    let img = data.results[0].artworkUrl100.replace('100x100bb', '1000x1000bb');
-                    $('#capa-album').css('background-image', `url(${img})`);
-                    $('#bg-blur').css('background-image', `url(${img})`);
+                    // Imagem de Alta Resolução (1000x1000)
+                    let imgOriginal = data.results[0].artworkUrl100;
+                    let imgAltaRes = imgOriginal.replace('100x100bb', '1000x1000bb');
+                    
+                    // Atualiza a capa e o fundo com transição suave
+                    $('#capa-album').fadeOut(400, function() {
+                        $(this).css('background-image', `url(${imgAltaRes})`).fadeIn(400);
+                    });
+                    $('#bg-blur').fadeOut(800, function() {
+                        $(this).css('background-image', `url(${imgAltaRes})`).fadeIn(800);
+                    });
                 } else {
                     resetCapa();
                 }
@@ -182,24 +203,24 @@
         $('#bg-blur').css('background-image', "none");
     }
 
-    // ATUALIZA DADOS DA SUA API
+    // 4. SINCRONIZAÇÃO COM SUA API (A CADA 7 SEGUNDOS)
     function atualizarDadosRadio() {
         $.getJSON('http://igng.com.br/api/VG5wQmVFOUJQVDA9KzM=', function(data) {
-            // Ajuste os campos abaixo conforme o retorno exato da sua API
-            // Supondo que sua API retorne: { "musica": "...", "ouvintes": "..." }
+            // Ajuste conforme os campos da sua API (ex: musica, artista, ouvintes)
             const musicaAtual = data.musica || "VAQUERITOS VIP ONLINE";
             const ouvintes = data.ouvintes || "0";
 
-            $('#status-radio').text(musicaAtual.toUpperCase());
+            $('#status-radio').text(musicaAtual.toUpperCase() + " | ONLINE 24/7 ");
             $('#qtd-ouvintes').text(ouvintes);
 
+            // Dispara a Busca Inteligente
             buscarCapaApple(musicaAtual);
         }).fail(function() {
-            console.log("Erro ao acessar API igng.com.br");
+            console.log("Erro na API de metadados.");
         });
     }
 
-    // Loop de atualização (7 segundos)
+    // Inicia o Loop
     setInterval(atualizarDadosRadio, 7000);
     atualizarDadosRadio();
 </script>
