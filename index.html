@@ -3,161 +3,194 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SELKIT REPRO XAT</title>
+    <title>PREMIUM RADIO PLAYER</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        /* Manter seu CSS original aqui */
-        *, *::before, *::after { box-sizing: border-box; }
-        body, html { margin: 0; padding: 0; background: transparent; }
         :root {
-            --pastel-pink: #ff8acb;
-            --soft-lilac: #caa6ff;
-            --light-lavender: #efe7ff;
-            --glass-bg: rgba(0, 0, 0, 0.65);
-            --glass-border: rgba(255, 138, 203, 0.4);
+            --neon-pink: #ff007a;
+            --neon-blue: #00f2ff;
+            --chrome: linear-gradient(145deg, #e6e6e6, #ffffff, #b3b3b3);
+            --dark-glass: rgba(10, 10, 15, 0.85);
+            --panel-border: rgba(255, 0, 122, 0.5);
         }
 
-        .radio-widget {
+        body, html { margin: 0; padding: 0; background: #050505; display: flex; justify-content: center; align-items: center; height: 100vh; }
+
+        /* Container Principal 637x363 */
+        .radio-wrapper {
             position: relative;
             width: 637px;
             height: 363px;
-            font-family: 'Poppins', sans-serif;
-            border-radius: 12px;
+            border-radius: 20px;
             overflow: hidden;
-            background-color: #000;
-            border: 1px solid var(--glass-border);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            user-select: none;
-            display: block;
+            background: #000;
+            border: 2px solid var(--panel-border);
+            box-shadow: 0 0 30px rgba(255, 0, 122, 0.2), inset 0 0 50px rgba(0,0,0,1);
+            font-family: 'Rajdhani', sans-serif;
         }
 
-        .bg-video {
+        /* Background Video */
+        .bg-layer {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            object-fit: cover; z-index: 1;
+            object-fit: cover;
+            z-index: 1;
+            filter: brightness(0.6) contrast(1.2);
         }
 
-        .video-overlay {
+        .overlay-grid {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.3); z-index: 2;
+            background: linear-gradient(0deg, rgba(0,0,0,0.8) 0%, transparent 50%),
+                        radial-gradient(circle, transparent 20%, rgba(0,0,0,0.4) 100%);
+            z-index: 2;
         }
 
-        .glass-panel {
-            background: var(--glass-bg);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            border: 1px solid var(--glass-border);
+        /* HUD - Topo */
+        .hud-top {
+            position: absolute;
+            top: 20px; left: 20px; right: 20px;
+            display: flex; justify-content: space-between;
+            z-index: 10;
         }
 
-        /* Layout */
-        .top-left-panel { position: absolute; top: 15px; left: 15px; z-index: 10; padding: 5px 15px; border-radius: 8px; text-align: center; }
-        .time-text { color: #fff; font-size: 22px; font-weight: 700; }
-        .date-text { color: var(--pastel-pink); font-size: 10px; text-transform: uppercase; }
-
-        .bottom-bar {
-            position: absolute; bottom: 12px; left: 12px; right: 12px;
-            height: 80px; border-radius: 20px; z-index: 10;
-            display: flex; align-items: center; padding: 0 15px; gap: 15px;
+        .clock-box {
+            background: var(--dark-glass);
+            padding: 10px 20px;
+            border-left: 4px solid var(--neon-pink);
+            clip-path: polygon(0 0, 100% 0, 90% 100%, 0% 100%);
         }
 
-        .bar-left { display: flex; align-items: center; gap: 15px; }
-        .main-play-btn {
-            width: 55px; height: 55px; border-radius: 50%;
-            background: rgba(0, 0, 0, 0.8); border: 2px solid var(--pastel-pink);
-            color: #fff; display: flex; align-items: center; justify-content: center;
-            cursor: pointer; transition: 0.3s;
+        .clock-box h2 { 
+            margin: 0; color: #fff; font-family: 'Orbitron'; font-size: 24px; 
+            text-shadow: 0 0 10px var(--neon-pink);
         }
 
-        /* Capa do Álbum Fix */
-        .album-wrapper { position: relative; width: 55px; height: 55px; flex-shrink: 0; }
-        #sonic_art img { width: 55px !important; height: 55px !important; border-radius: 8px; object-fit: cover; border: 1px solid var(--glass-border); }
-
-        .bar-center { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; overflow: hidden; color: white; }
-        #sonic_title { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--pastel-pink); }
-        
-        .info-badge { font-size: 10px; background: rgba(255,255,255,0.1); padding: 2px 8px; border-radius: 10px; display: flex; gap: 4px; }
-        
-        .vol-container { display: flex; align-items: center; gap: 8px; background: var(--glass-bg); padding: 5px 10px; border-radius: 10px; }
-        input[type="range"] { cursor: pointer; width: 60px; }
-
-        /* Equalizer */
-        .equalizer { display: flex; align-items: flex-end; gap: 2px; height: 12px; }
-        .eq-bar { width: 3px; background: var(--soft-lilac); height: 3px; transition: 0.2s; }
-        .equalizer.active .eq-bar { animation: eq-play 0.6s infinite alternate; }
-        @keyframes eq-play { 0% { height: 3px; } 100% { height: 12px; } }
-
-        /* Badge Al Aire */
-        .al-aire-badge {
-            position: absolute; top: -8px; left: 50%; transform: translateX(-50%);
-            background: var(--pastel-pink); color: #000; font-size: 9px;
-            font-weight: 800; padding: 2px 6px; border-radius: 10px; z-index: 5;
+        /* Área Central - Info da Música */
+        .music-info-center {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 10;
+            width: 80%;
         }
+
+        #sonic_art img {
+            width: 120px !important; height: 120px !important;
+            border-radius: 50%;
+            border: 3px solid var(--neon-pink);
+            box-shadow: 0 0 25px var(--neon-pink);
+            margin-bottom: 15px;
+            animation: rotateCapa 10s linear infinite;
+        }
+
+        @keyframes rotateCapa { from {transform: rotate(0deg);} to {transform: rotate(360deg);} }
+
+        #sonic_title {
+            color: #fff; font-size: 22px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 2px;
+            margin-bottom: 5px; text-shadow: 0 2px 10px rgba(0,0,0,1);
+        }
+
+        /* Controles Inferiores */
+        .hud-bottom {
+            position: absolute;
+            bottom: 0; left: 0; width: 100%;
+            height: 100px;
+            background: rgba(0,0,0,0.9);
+            border-top: 1px solid var(--panel-border);
+            display: flex; align-items: center;
+            padding: 0 30px; gap: 20px;
+            z-index: 10;
+        }
+
+        .btn-play-main {
+            width: 70px; height: 70px;
+            background: var(--chrome);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; border: none;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            transition: 0.3s;
+        }
+
+        .btn-play-main:hover { transform: scale(1.1); filter: brightness(1.2); }
+        .btn-play-main i { color: #111; font-size: 28px; }
+
+        .meta-data { flex-grow: 1; color: #fff; }
+        .meta-data .label { color: var(--neon-pink); font-size: 12px; font-weight: 700; }
+
+        /* Equalizer Moderno */
+        .eq-container { display: flex; gap: 3px; height: 30px; align-items: flex-end; }
+        .bar { width: 4px; background: var(--neon-blue); height: 5px; transition: 0.2s; }
+        .active .bar { animation: barAnim 0.5s infinite alternate; }
+        @keyframes barAnim { from {height: 5px;} to {height: 30px;} }
+
+        .vol-slider-wrap { display: flex; align-items: center; gap: 10px; color: var(--neon-blue); }
+        input[type=range] { -webkit-appearance: none; width: 80px; height: 4px; background: #333; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; background: var(--neon-blue); cursor: pointer; border-radius: 50%; }
+
     </style>
 </head>
 <body>
 
-    <div class="radio-widget">
-        <video class="bg-video" autoplay loop muted playsinline>
+    <div class="radio-wrapper">
+        <video class="bg-layer" autoplay loop muted playsinline>
             <source src="https://i.imgur.com/Z78pSNa.mp4" type="video/mp4">
         </video>
-        <div class="video-overlay"></div>
+        <div class="overlay-grid"></div>
 
-        <div class="top-left-panel glass-panel">
-            <div class="date-text" id="date-text">--- --/--</div>
-            <div class="time-text" id="time-text">00:00</div>
-        </div>
-
-        <div class="bottom-bar glass-panel">
-            
-            <div class="bar-left">
-                <button class="main-play-btn" id="main-play-btn">
-                    <i class="fas fa-play" id="main-play-icon"></i>
-                </button>
-                
-                <div class="album-wrapper">
-                    <div class="al-aire-badge">AO VIVO</div>
-                    <div id="sonic_art"></div> </div>
+        <div class="hud-top">
+            <div class="clock-box">
+                <span id="date-text" style="color: var(--neon-blue); font-size: 12px;">---</span>
+                <h2 id="time-text">00:00</h2>
             </div>
-
-            <div class="bar-center">
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <div id="sonic_title">Carregando música...</div>
-                    <div class="equalizer" id="equalizer">
-                        <div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div>
-                    </div>
-                </div>
-                <div style="display: flex; gap: 10px; margin-top: 4px;">
-                    <div class="info-badge">DJ: <span id="sonic_dj">Online</span></div>
-                    <div class="info-badge"><i class="fas fa-user"></i> <span id="sonic_listeners">0</span></div>
-                </div>
-            </div>
-
-            <div class="bar-right">
-                <div class="vol-container">
-                    <i class="fas fa-volume-up" style="color: var(--pastel-pink); font-size: 12px;"></i>
-                    <input type="range" id="vol-slider" min="0" max="1" step="0.01" value="0.75">
-                </div>
+            <div style="background: var(--dark-glass); padding: 10px; border-radius: 5px; color: var(--neon-pink);">
+                <i class="fas fa-signal"></i> <span id="sonic_listeners">0</span> ONLINE
             </div>
         </div>
 
-        <audio id="audio-stream" src="http://stm.igng.com.br:7018/stream" crossorigin="anonymous"></audio>
+        <div class="music-info-center">
+            <div id="sonic_art"></div>
+            <div id="sonic_title">Conectando ao Stream...</div>
+            <div style="color: var(--neon-blue); font-weight: 600;">DJ: <span id="sonic_dj">---</span></div>
+        </div>
+
+        <div class="hud-bottom">
+            <button class="btn-play-main" id="play-trigger">
+                <i class="fas fa-play" id="play-icon"></i>
+            </button>
+
+            <div class="meta-data">
+                <div class="label">SPECTRUM ANALYZER</div>
+                <div class="eq-container" id="eq">
+                    <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+                    <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+                </div>
+            </div>
+
+            <div class="vol-slider-wrap">
+                <i class="fas fa-volume-down"></i>
+                <input type="range" id="vol-control" min="0" max="1" step="0.1" value="0.8">
+            </div>
+        </div>
+
+        <audio id="radio-player" src="http://stm.igng.com.br:7018/stream" crossorigin="anonymous"></audio>
     </div>
 
-    <script id="sonic_js" data-port="8004" src="https://fire.doscast.com/cp/widgets.js?r=976"></script>
+    <script id="sonic_js" data-port="8004" src="https://fire.doscast.com/cp/widgets.js?r=12"></script>
 
     <script>
-        const audio = document.getElementById('audio-stream');
-        const playBtn = document.getElementById('main-play-btn');
-        const playIcon = document.getElementById('main-play-icon');
-        const eq = document.getElementById('equalizer');
-        const volSlider = document.getElementById('vol-slider');
+        const audio = document.getElementById('radio-player');
+        const playBtn = document.getElementById('play-trigger');
+        const playIcon = document.getElementById('play-icon');
+        const eq = document.getElementById('eq');
+        const vol = document.getElementById('vol-control');
 
-        // Play/Pause
         playBtn.addEventListener('click', () => {
             if (audio.paused) {
                 audio.play();
@@ -170,23 +203,15 @@
             }
         });
 
-        // Volume
-        volSlider.addEventListener('input', (e) => {
-            audio.volume = e.target.value;
-        });
+        vol.addEventListener('input', (e) => { audio.volume = e.target.value; });
 
-        // Relógio
-        function updateClock() {
+        function updateHUD() {
             const now = new Date();
             document.getElementById('time-text').textContent = now.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
-            const days = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'];
-            document.getElementById('date-text').textContent = `${days[now.getDay()]} ${now.getDate()}/${now.getMonth()+1}`;
+            document.getElementById('date-text').textContent = now.toLocaleDateString('pt-BR', {weekday: 'short', day: '2-digit', month: '2-digit'}).toUpperCase();
         }
-        setInterval(updateClock, 1000);
-        updateClock();
-
-        // Fallback para Metadados (Caso o widget externo falhe)
-        // O Sonic Panel injeta automaticamente nos IDs 'sonic_title', 'sonic_art', etc.
+        setInterval(updateHUD, 1000);
+        updateHUD();
     </script>
 </body>
 </html>
