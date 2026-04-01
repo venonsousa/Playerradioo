@@ -4,30 +4,58 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Radio Dale Play</title>
+<title>Radio Player PRO</title>
 
+<!-- CSS -->
 <link rel="stylesheet" href="css/Repro34.css">
 
 <!-- Font Awesome -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
+<style>
+body {
+  margin: 0;
+  background: #000;
+  overflow: hidden;
+}
+</style>
+
 </head>
 
 <body>
 
+<!-- SCRIPTS -->
 <script src="js/Repro34.js"></script>
 <script src="js/Player34.js"></script>
 
 <script>
-// 🔥 INICIALIZA O PLAYER AUTOMÁTICO
-const audio = crearAudio();
-const main = crearMainContainer();
+// 🚀 INICIALIZAÇÃO CORRETA DO PLAYER
 
-main.appendChild(crearLeftPanel());
-main.appendChild(crearRightPanel());
+window.addEventListener("DOMContentLoaded", () => {
 
-document.body.appendChild(audio);
-document.body.appendChild(main);
+  try {
+
+    // cria audio
+    const audio = crearAudio();
+
+    // cria estrutura
+    const main = crearMainContainer();
+    const left = crearLeftPanel();
+    const right = crearRightPanel();
+
+    main.appendChild(left);
+    main.appendChild(right);
+
+    document.body.appendChild(audio);
+    document.body.appendChild(main);
+
+    console.log("✅ Player carregado com sucesso");
+
+  } catch (err) {
+    console.error("❌ Erro ao iniciar player:", err);
+  }
+
+});
 </script>
 
 </body>
