@@ -16,6 +16,7 @@ body {
   font-family: Arial;
 }
 
+/* PLAYER */
 .player {
   position: relative;
   display: flex;
@@ -27,8 +28,14 @@ body {
   height: 276px;
   overflow: hidden;
   color: white;
+
+  border: 2px solid rgba(0,255,204,0.4);
+  box-shadow:
+    0 0 10px rgba(0,255,204,0.3),
+    0 0 20px rgba(255,0,255,0.2);
 }
 
+/* VIDEO */
 .player video {
   position: absolute;
   width: 100%;
@@ -37,6 +44,7 @@ body {
   z-index: -2;
 }
 
+/* INFO */
 .info-container {
   position: relative;
   width: 280px;
@@ -61,12 +69,25 @@ body {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  width: 100%;
 }
 
 .radio-name { color:#00ffcc; font-weight:bold; }
 .station { color:#aaa; }
-.artist { color:#fff; }
 
+/* ARTISTA COM MARQUEE */
+.artist {
+  color: #fff;
+  width: 100%;
+  overflow: hidden;
+}
+
+.artist span {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+/* MÚSICA */
 #current-music {
   width: 100%;
   overflow: hidden;
@@ -77,6 +98,7 @@ body {
   white-space: nowrap;
 }
 
+/* MARQUEE */
 .marquee {
   animation: marquee 10s linear infinite;
 }
@@ -88,13 +110,14 @@ body {
 
 #volume { width: 100%; }
 
+/* CONTADOR */
 .ouvintes {
   font-size: 14px;
-  color: #00ffcc;
-  text-shadow: 0 0 8px #00ffcc;
-  animation: pulse 1s infinite alternate;
+  color: #ccc;
+  margin-top: 4px;
 }
 
+/* DIREITA */
 .right {
   display: flex;
   flex-direction: column;
@@ -102,6 +125,7 @@ body {
   gap: 10px;
 }
 
+/* CAPA */
 .cover {
   position: relative;
   width: 206px;
@@ -118,6 +142,7 @@ body {
   transition: opacity 0.3s;
 }
 
+/* NOTAS */
 .notes {
   position: absolute;
   bottom: 10px;
@@ -137,6 +162,7 @@ body {
   100% { transform: translateY(-120px); opacity: 0; }
 }
 
+/* BOTÃO */
 #playBtn {
   width: 45px;
   height: 45px;
@@ -171,8 +197,10 @@ body {
   <div class="info">
     <div class="radio-name">RÁDIO INSANO</div>
     <div class="station">Sabor Energético</div>
-    <div class="artist" id="artist">🎤 Carregando...</div>
+
+    <div class="artist" id="artist"><span>🎤 Carregando...</span></div>
     <div id="current-music"><span>Carregando...</span></div>
+
     <div class="ouvintes" id="ouvintes">👥 0 ouvindo</div>
     <input type="range" id="volume" min="0" max="1" step="0.01" value="1">
   </div>
@@ -252,7 +280,7 @@ function criarNota(){
 
 setInterval(()=>{ if(!audio.paused) criarNota(); },500);
 
-/* APPLE MUSIC */
+/* 🍎 CAPA */
 async function buscarCapa(artista,musica){
   try{
     const termo=encodeURIComponent(`${artista} ${musica}`);
@@ -286,7 +314,19 @@ function atualizarTexto(texto){
   const el=document.getElementById("current-music");
   el.innerHTML=`<span>${texto}</span>`;
   const span=el.querySelector("span");
+
   if(span.scrollWidth>el.clientWidth){
+    span.classList.add("marquee");
+  }
+}
+
+/* 🎤 ARTISTA COM MARQUEE */
+function atualizarArtista(nome){
+  const el = document.getElementById("artist");
+  el.innerHTML = `<span>🎤 ${nome}</span>`;
+  const span = el.querySelector("span");
+
+  if(span.scrollWidth > el.clientWidth){
     span.classList.add("marquee");
   }
 }
@@ -310,10 +350,10 @@ async function atualizar(){
       musica=partes.slice(1).join("-").trim();
     }
 
-    document.getElementById("artist").textContent="🎤 "+artista;
-    document.getElementById("ouvintes").textContent=`👥 ${ouvintes} ouvindo`;
-
+    atualizarArtista(artista);
     atualizarTexto(musica);
+
+    document.getElementById("ouvintes").textContent=`👥 ${ouvintes} ouvindo`;
 
     let capa=await buscarCapa(artista,musica);
     atualizarCapa(capa,artista);
