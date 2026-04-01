@@ -6,15 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@400;700&display=swap" rel="stylesheet">
     <style type="text/css">
-        /* RESET E BASE */
         body { margin: 0; padding: 0; background: #000; font-family: 'Reem Kufi', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
         
-        /* CONTAINER DO PLAYER */
         .player-container {
-            /* ADICIONADO: Nova Imagem de Fundo sobrepondo o fundo preto */
+            /* Fundo principal solicitado */
             background: #111 url('https://xatimg.com/image/Q5xotmj4LryX.png') no-repeat center/cover;
             position: relative;
-            box-shadow: 0px 0px 35px rgba(0,0,0,1);
+            box-shadow: 0px 0px 40px rgba(0,0,0,1);
             width: 600px;
             height: 400px;
             border-radius: 15px;
@@ -22,20 +20,19 @@
             border: 1px solid rgba(255,255,255,0.1);
         }
 
-        /* EFEITO DE BLUR DINÂMICO (Para a Capa do Álbum) */
+        /* Camada de Blur dinâmico da Apple Music */
         .blur-bg {
-            width: 120%; height: 120%;
+            width: 110%; height: 110%;
             background-size: cover;
             background-position: center;
             position: absolute;
-            top: -10%; left: -10%;
-            /* Ajustado: Blur ligeiramente menor para não apagar a nova logo de fundo */
-            filter: blur(25px) brightness(0.35);
+            top: -5%; left: -5%;
+            filter: blur(30px) brightness(0.4);
             z-index: 1;
             transition: background-image 1.5s ease-in-out;
+            opacity: 0.7; /* Permite ver um pouco do fundo fixo por trás */
         }
 
-        /* CONTEÚDO PRINCIPAL (Z-INDEX SUPERIOR) */
         .content {
             position: relative;
             z-index: 10;
@@ -45,15 +42,161 @@
             justify-content: center;
             height: 100%;
             color: #fff;
-            /* ADICIONADO: Leve sombra para garantir leitura sobre o novo fundo */
-            text-shadow: 0px 2px 4px rgba(0,0,0,0.8);
+            text-shadow: 0px 2px 5px rgba(0,0,0,0.9);
         }
 
-        /* CAPA DO ÁLBUM COM BORDA METAL */
         .album-art {
-            width: 175px;
-            height: 175px;
-            background: url('http://igng.com.br/api/logo.png') no-repeat center;
-            background-size: cover;
+            width: 170px;
+            height: 170px;
+            background: url('http://igng.com.br/api/logo.png') no-repeat center/cover;
             border-radius: 12px;
-            box-shadow: 0
+            box-shadow: 0px 15px 45px rgba(0,0,0,0.9);
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+
+        .info-box {
+            width: 85%;
+            margin-top: 25px;
+            text-align: center;
+            background: rgba(0,0,0,0.65);
+            padding: 15px 0;
+            border-left: 5px solid #fff;
+            border-right: 5px solid #fff;
+            overflow: hidden;
+            backdrop-filter: blur(5px);
+        }
+
+        .scrolling-text {
+            white-space: nowrap;
+            display: inline-block;
+            font-size: 20px;
+            font-weight: bold;
+            text-transform: uppercase;
+            animation: marquee 14s linear infinite;
+        }
+
+        @keyframes marquee {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+
+        .controls {
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .btn-play { width: 60px; height: 60px; cursor: pointer; transition: 0.3s; }
+        .status-play { background: url('https://i.imgur.com/mqkdfJP.png') no-repeat center/contain; }
+        .status-stop { background: url('https://i.imgur.com/Ji5iela.png') no-repeat center/contain; }
+
+        input[type=range] { width: 130px; cursor: pointer; accent-color: #fff; }
+
+        .listeners-count {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            font-size: 14px;
+            background: rgba(0,0,0,0.4);
+            padding: 5px 15px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+    </style>
+</head>
+<body>
+
+<div class="player-container">
+    <div class="blur-bg" id="bg-blur"></div>
+    
+    <div class="content">
+        <div class="listeners-count">OUVINTES: <span id="ouvintes">0</span></div>
+        <div class="album-art" id="capa"></div>
+
+        <div class="info-box">
+            <div class="scrolling-text" id="musica">SINTONIZANDO...</div>
+        </div>
+
+        <div class="controls">
+            <div class="btn-play status-play" id="bt-play"></div>
+            <input type="range" id="volume" min="0" max="1" step="0.01" value="0.8">
+        </div>
+
+        <img src="https://i.imgur.com/c3NtUFR.gif" style="margin-top: 25px; opacity: 0.6;" width="350">
+    </div>
+</div>
+
+<audio id="player-audio" src="https://stm.igng.com.br:7018/;"></audio>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="text/javascript">
+    const audio = document.getElementById('player-audio');
+    let musicaAntiga = "";
+
+    $('#bt-play').click(function() {
+        if (audio.paused) {
+            audio.play().catch(e => console.log("Play negado pelo navegador."));
+            $(this).removeClass('status-play').addClass('status-stop');
+        } else {
+            audio.pause();
+            $(this).removeClass('status-stop').addClass('status-play');
+        }
+    });
+
+    $('#volume').on('input', function() { audio.volume = this.value; });
+
+    function buscarCapaApple(termo) {
+        // Limpeza de texto para Sertanejo e Funk
+        let limpo = termo.toUpperCase()
+            .replace(/\(.*\)/g, "").replace(/\[.*\]/g, "")
+            .replace(/CLIP/g, "").replace(/OFFICIAL/g, "").replace(/VIDEO/g, "")
+            .replace(/AO VIVO/g, "").replace(/FEAT/g, "").replace(/FT\./g, "")
+            .replace(/-/g, " ").trim();
+
+        if (limpo === musicaAntiga || limpo.length < 3) return;
+        musicaAntiga = limpo;
+
+        $.ajax({
+            url: `https://itunes.apple.com/search?term=${encodeURIComponent(limpo)}&media=music&limit=1`,
+            dataType: 'jsonp',
+            success: function(data) {
+                if (data.results.length > 0) {
+                    let img = data.results[0].artworkUrl100.replace('100x100bb', '1000x1000bb');
+                    $('#capa, #bg-blur').fadeOut(500, function() {
+                        $(this).css('background-image', `url(${img})`).fadeIn(500);
+                    });
+                } else {
+                    $('#capa').css('background-image', "url('http://igng.com.br/api/logo.png')");
+                    $('#bg-blur').fadeOut(500);
+                }
+            }
+        });
+    }
+
+    function atualizarPainel() {
+        const apiXML = "https://igng.com.br/api/Vkc1d1FtVkZPVUpRVkRBOStS";
+        
+        $.ajax({
+            url: `https://api.allorigins.win/get?url=${encodeURIComponent(apiXML)}`,
+            success: function(response) {
+                const parser = new DOMParser(); // Corrigido: 'new' adicionado
+                const xml = parser.parseFromString(response.contents, "text/xml");
+                
+                const musicaAtual = xml.getElementsByTagName("musica_atual")[0]?.childNodes[0]?.nodeValue || "VAQUERITOS VIP";
+                const totalOuvintes = xml.getElementsByTagName("ouvintes_conectados")[0]?.childNodes[0]?.nodeValue || "0";
+
+                $('#musica').text(musicaAtual.toUpperCase() + " | ONLINE 24H");
+                $('#ouvintes').text(totalOuvintes);
+
+                buscarCapaApple(musicaAtual);
+            }
+        });
+    }
+
+    setInterval(atualizarPainel, 8000);
+    atualizarPainel();
+</script>
+
+</body>
+</html>
