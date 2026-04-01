@@ -2,34 +2,32 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>PLAYER VAQUERITOS VIP - OFICIAL</title>
+    <title>PLAYER VAQUERITOS VIP - XML INTEGRADO</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@400;700&display=swap" rel="stylesheet">
     <style type="text/css">
-        /* Layout Base - Estilo Metálico/Dark */
-        body { margin: 0; padding: 0; background: transparent; font-family: 'Reem Kufi', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
+        body { margin: 0; padding: 0; background: #000; font-family: 'Reem Kufi', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
         
         .player-container {
-            background: #000; 
+            background: #111; 
             position: relative;
-            box-shadow: 0px 0px 30px rgba(0,0,0,0.9);
+            box-shadow: 0px 0px 35px rgba(0,0,0,1);
             width: 600px;
             height: 400px;
-            border-radius: 12px;
+            border-radius: 15px;
             overflow: hidden;
             border: 1px solid rgba(255,255,255,0.1);
         }
 
-        /* Efeito de Fundo Esfumaçado (Blur) */
         .blur-bg {
-            width: 115%; height: 115%;
+            width: 120%; height: 120%;
             background-size: cover;
             background-position: center;
             position: absolute;
-            top: -7.5%; left: -7.5%;
-            filter: blur(25px) brightness(0.4);
+            top: -10%; left: -10%;
+            filter: blur(30px) brightness(0.3);
             z-index: 1;
-            transition: background-image 1.2s ease-in-out;
+            transition: background-image 1.5s ease-in-out;
         }
 
         .content {
@@ -43,37 +41,34 @@
             color: #fff;
         }
 
-        /* Capa do Álbum com Borda Metálica */
         .album-art {
-            width: 170px;
-            height: 170px;
+            width: 180px;
+            height: 180px;
             background: url('http://igng.com.br/api/logo.png') no-repeat center;
             background-size: cover;
-            border-radius: 10px;
-            box-shadow: 0px 10px 30px rgba(0,0,0,0.8);
-            border: 2px solid rgba(255,255,255,0.3);
-            transition: background-image 0.5s ease;
+            border-radius: 12px;
+            box-shadow: 0px 15px 40px rgba(0,0,0,0.9);
+            border: 2px solid rgba(255,255,255,0.25);
         }
 
-        /* Caixa de Informações e Marquee (Texto Correndo) */
         .info-box {
             width: 85%;
             margin-top: 25px;
             text-align: center;
-            background: rgba(0,0,0,0.5);
-            padding: 12px 0;
-            border-left: 4px solid #fff;
-            border-right: 4px solid #fff;
+            background: rgba(0,0,0,0.6);
+            padding: 15px 0;
+            border-left: 5px solid #fff;
+            border-right: 5px solid #fff;
             overflow: hidden;
         }
 
         .scrolling-text {
             white-space: nowrap;
             display: inline-block;
-            font-size: 20px;
+            font-size: 22px;
             font-weight: bold;
             text-transform: uppercase;
-            animation: marquee 15s linear infinite;
+            animation: marquee 12s linear infinite;
         }
 
         @keyframes marquee {
@@ -81,38 +76,28 @@
             100% { transform: translateX(-100%); }
         }
 
-        /* Controles e Volume */
         .controls {
             margin-top: 20px;
             display: flex;
             align-items: center;
-            gap: 25px;
+            gap: 30px;
         }
 
-        .btn-play {
-            width: 60px;
-            height: 60px;
-            cursor: pointer;
-            background-size: contain !important;
-            background-repeat: no-repeat !important;
-            transition: transform 0.2s;
-        }
-        .btn-play:active { transform: scale(0.9); }
+        .btn-play { width: 65px; height: 65px; cursor: pointer; transition: 0.3s; }
+        .status-play { background: url('https://i.imgur.com/mqkdfJP.png') no-repeat center/contain; }
+        .status-stop { background: url('https://i.imgur.com/Ji5iela.png') no-repeat center/contain; }
 
-        .status-play { background: url('https://i.imgur.com/mqkdfJP.png'); }
-        .status-stop { background: url('https://i.imgur.com/Ji5iela.png'); }
-
-        input[type=range] { width: 130px; cursor: pointer; accent-color: #fff; }
+        input[type=range] { width: 140px; cursor: pointer; accent-color: #fff; }
 
         .listeners-count {
             position: absolute;
             top: 20px;
             right: 25px;
-            font-size: 14px;
-            background: rgba(255,255,255,0.15);
-            padding: 5px 15px;
-            border-radius: 20px;
-            backdrop-filter: blur(5px);
+            font-size: 15px;
+            background: rgba(255,255,255,0.1);
+            padding: 6px 18px;
+            border-radius: 25px;
+            backdrop-filter: blur(10px);
         }
     </style>
 </head>
@@ -122,53 +107,96 @@
     <div class="blur-bg" id="bg-blur"></div>
     
     <div class="content">
-        <div class="listeners-count">OUVINTES: <span id="qtd-ouvintes">0</span></div>
-        
-        <div class="album-art" id="capa-album"></div>
+        <div class="listeners-count">OUVINTES: <span id="ouvintes">0</span></div>
+        <div class="album-art" id="capa"></div>
 
         <div class="info-box">
-            <div class="scrolling-text" id="status-radio">CONECTANDO TRANSMISSÃO...</div>
+            <div class="scrolling-text" id="musica">SINTONIZANDO...</div>
         </div>
 
         <div class="controls">
-            <div class="btn-play status-play" id="play-trigger"></div>
-            <input type="range" id="vol-control" min="0" max="1" step="0.01" value="0.8">
+            <div class="btn-play status-play" id="bt-play"></div>
+            <input type="range" id="volume" min="0" max="1" step="0.01" value="0.8">
         </div>
 
-        <img src="https://i.imgur.com/c3NtUFR.gif" style="margin-top: 20px; opacity: 0.5;" width="350">
+        <img src="https://i.imgur.com/c3NtUFR.gif" style="margin-top: 25px; opacity: 0.6;" width="380">
     </div>
 </div>
 
-<audio id="audio-engine" src="https://stm.igng.com.br:7018/;"></audio>
+<audio id="player-audio" src="https://stm.igng.com.br:7018/;"></audio>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script type="text/javascript">
-    const audio = document.getElementById('audio-engine');
-    const playTrigger = $('#play-trigger');
-    let ultimaMusica = "";
+    const audio = document.getElementById('player-audio');
+    let musicaAntiga = "";
 
-    // 1. PLAY / PAUSE (Com tratamento de erro para autoplay)
-    playTrigger.click(function() {
+    // 1. Play/Pause
+    $('#bt-play').click(function() {
         if (audio.paused) {
-            audio.play().then(() => {
-                playTrigger.removeClass('status-play').addClass('status-stop');
-            }).catch(e => {
-                console.log("Autoplay bloqueado pelo navegador. Interação do usuário necessária.", e);
-            });
+            audio.play();
+            $(this).removeClass('status-play').addClass('status-stop');
         } else {
             audio.pause();
-            playTrigger.removeClass('status-stop').addClass('status-play');
+            $(this).removeClass('status-stop').addClass('status-play');
         }
     });
 
-    // 2. CONTROLE DE VOLUME
-    $('#vol-control').on('input', function() {
-        audio.volume = this.value;
-    });
+    // 2. Volume
+    $('#volume').on('input', function() { audio.volume = this.value; });
 
-    // 3. BUSCA INTELIGENTE DE CAPA (APPLE MUSIC)
-    function buscarCapaApple(termo) {
-        // Limpeza Profunda: Essencial para Sertanejo e Funk
-        let termoLimpo = termo.toUpperCase()
-            .replace(/\(.*\)/g, "") // Remove tudo entre parênteses: (Ao Vivo), (Remix)
-            .replace
+    // 3. Busca Inteligente Apple Music
+    function buscarCapa(termo) {
+        // Limpeza de metadados para Sertanejo/Funk
+        let limpo = termo.toUpperCase()
+            .replace(/\(.*\)/g, "").replace(/\[.*\]/g, "")
+            .replace(/CLIP/g, "").replace(/OFFICIAL/g, "").replace(/VIDEO/g, "")
+            .replace(/AO VIVO/g, "").replace(/FEAT/g, "").replace(/FT\./g, "")
+            .replace(/-/g, " ").trim();
+
+        if (limpo === musicaAntiga || limpo.length < 3) return;
+        musicaAntiga = limpo;
+
+        $.ajax({
+            url: `https://itunes.apple.com/search?term=${encodeURIComponent(limpo)}&media=music&limit=1`,
+            dataType: 'jsonp',
+            success: function(data) {
+                if (data.results.length > 0) {
+                    let img = data.results[0].artworkUrl100.replace('100x100bb', '1000x1000bb');
+                    $('#capa, #bg-blur').fadeOut(500, function() {
+                        $(this).css('background-image', `url(${img})`).fadeIn(500);
+                    });
+                } else {
+                    $('#capa').css('background-image', "url('http://igng.com.br/api/logo.png')");
+                }
+            }
+        });
+    }
+
+    // 4. Leitura do XML (Convertido para JSON via Proxy ou direto se permitido)
+    function atualizarPainel() {
+        // Usamos um serviço que converte o XML do seu link para JSON para facilitar no JS
+        const apiXML = "http://igng.com.br/api/Vkc1d1FtVkZPVUpRVkRBOStS";
+        
+        $.ajax({
+            url: `https://api.allorigins.win/get?url=${encodeURIComponent(apiXML)}`,
+            success: function(response) {
+                const parser = new DOMParser();
+                const xml = parser.parseFromString(response.contents, "text/xml");
+                
+                const musicaAtual = xml.getElementsByTagName("musica_atual")[0].childNodes[0].nodeValue;
+                const totalOuvintes = xml.getElementsByTagName("ouvintes_conectados")[0].childNodes[0].nodeValue;
+
+                $('#musica').text(musicaAtual.toUpperCase() + " | VAQUERITOS VIP ");
+                $('#ouvintes').text(totalOuvintes);
+
+                buscarCapa(musicaAtual);
+            }
+        });
+    }
+
+    setInterval(atualizarPainel, 8000);
+    atualizarPainel();
+</script>
+
+</body>
+</html>
