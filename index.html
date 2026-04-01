@@ -56,21 +56,11 @@
             text-align: center; z-index: 10; width: 90%;
         }
 
-        /* Ajuste na imagem da capa */
-        #sonic_art img {
-            width: 110px !important; height: 110px !important;
-            border-radius: 50%; border: 3px solid var(--neon-pink);
-            margin-bottom: 10px;
-            animation: rotateCapa 12s linear infinite;
-        }
-
-        @keyframes rotateCapa { from {transform: rotate(0deg);} to {transform: rotate(360deg);} }
-
-        /* ID CORRETO PARA O SONIC PANEL */
-        #sonic_song {
-            color: #fff; font-size: 20px; font-weight: 700;
+        #radio_song {
+            color: #fff; font-size: 22px; font-weight: 700;
             text-transform: uppercase; display: block;
             text-shadow: 0 2px 10px #000;
+            min-height: 30px;
         }
 
         .hud-bottom {
@@ -84,6 +74,7 @@
         .btn-play-main {
             width: 60px; height: 60px; background: var(--chrome);
             border-radius: 50%; border: none; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
         }
 
         .eq-container { display: flex; gap: 3px; height: 20px; align-items: flex-end; }
@@ -91,7 +82,7 @@
         .active .bar { animation: barAnim 0.5s infinite alternate; }
         @keyframes barAnim { from {height: 3px;} to {height: 20px;} }
 
-        #sonic_dj { color: var(--neon-pink); font-weight: bold; }
+        #radio_status { color: var(--neon-pink); font-weight: bold; font-size: 12px; letter-spacing: 1px; }
     </style>
 </head>
 <body>
@@ -106,32 +97,34 @@
                 <div id="date-text" style="color: var(--neon-blue); font-size: 11px;">---</div>
                 <h2 id="time-text" style="margin:0; color:#fff; font-family:'Orbitron';">00:00</h2>
             </div>
-            <div style="background: var(--dark-glass); padding: 10px; color: var(--neon-pink); font-size: 14px;">
-                <i class="fas fa-users"></i> <span id="sonic_listeners">0</span>
-            </div>
+            <div id="radio_status">AUTO DJ / LIVE</div>
         </div>
 
         <div class="music-info-center">
-            <div id="sonic_art"></div>
-            <div id="sonic_song">CARREGANDO...</div>
-            <div style="color: var(--neon-blue); font-size: 14px; margin-top: 5px;">
-                NO AR: <span id="sonic_dj">LOCUTOR</span>
+            <div style="margin-bottom: 15px;">
+                <i class="fas fa-compact-disc fa-spin" style="color: var(--neon-pink); font-size: 50px;"></i>
+            </div>
+            <div id="radio_song">OBTENDO INFORMAÇÕES...</div>
+            <div style="color: var(--neon-blue); font-size: 14px; margin-top: 5px; font-weight: 600;">
+                <i class="fas fa-broadcast-tower"></i> CONEXÃO SERTANEJA
             </div>
         </div>
 
         <div class="hud-bottom">
             <button class="btn-play-main" id="play-trigger">
-                <i class="fas fa-play" id="play-icon"></i>
+                <i class="fas fa-play" id="play-icon" style="font-size: 20px;"></i>
             </button>
 
             <div style="flex-grow: 1;">
+                <div class="label" style="color: #666; font-size: 10px; margin-bottom: 5px;">AUDIO SPECTRUM</div>
                 <div class="eq-container" id="eq">
+                    <div class="bar"></div><div class="bar"></div><div class="bar"></div>
                     <div class="bar"></div><div class="bar"></div><div class="bar"></div>
                     <div class="bar"></div><div class="bar"></div><div class="bar"></div>
                 </div>
             </div>
 
-            <div style="display: flex; align-items: center; gap: 8px; color: var(--neon-blue);">
+            <div style="display: flex; align-items: center; gap: 10px; color: var(--neon-blue);">
                 <i class="fas fa-volume-up"></i>
                 <input type="range" id="vol-control" min="0" max="1" step="0.1" value="0.8">
             </div>
@@ -140,19 +133,37 @@
         <audio id="radio-player" src="http://stm.igng.com.br:7018/stream" crossorigin="anonymous"></audio>
     </div>
 
-    <script id="sonic_js" data-port="8004" src="https://fire.doscast.com/cp/widgets.js?r=32"></script>
-
     <script>
         const audio = document.getElementById('radio-player');
         const playBtn = document.getElementById('play-trigger');
         const playIcon = document.getElementById('play-icon');
         const eq = document.getElementById('eq');
         const vol = document.getElementById('vol-control');
+        const songDisplay = document.getElementById('radio_song');
+
+        // FUNÇÃO PARA PEGAR MÚSICA DA API
+        async function updateSong() {
+            try {
+                // Usando um proxy para evitar erro de CORS se necessário
+                const response = await fetch('http://igng.com.br/api/NzAxOCsx');
+                const data = await response.text();
+                
+                if (data && data.trim() !== "") {
+                    songDisplay.innerText = data.toUpperCase();
+                }
+            } catch (error) {
+                console.error("Erro ao carregar API:", error);
+            }
+        }
+
+        // Atualiza a cada 15 segundos
+        setInterval(updateSong, 15000);
+        updateSong();
 
         // Play/Pause
         playBtn.addEventListener('click', () => {
             if (audio.paused) {
-                audio.play().catch(e => console.log("Erro ao dar play:", e));
+                audio.play();
                 playIcon.className = 'fas fa-pause';
                 eq.classList.add('active');
             } else {
@@ -162,10 +173,8 @@
             }
         });
 
-        // Volume
         vol.addEventListener('input', (e) => { audio.volume = e.target.value; });
 
-        // Relógio
         function updateHUD() {
             const now = new Date();
             document.getElementById('time-text').textContent = now.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
@@ -173,14 +182,6 @@
         }
         setInterval(updateHUD, 1000);
         updateHUD();
-
-        // Fallback: Se o sonic_song estiver vazio após 3 segundos, tenta forçar
-        setTimeout(() => {
-            const songName = document.getElementById('sonic_song').innerText;
-            if(songName === "CARREGANDO..." || songName === "") {
-                console.log("Tentando reconectar widgets...");
-            }
-        }, 3000);
     </script>
 </body>
 </html>
